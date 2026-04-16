@@ -1,0 +1,431 @@
+/* OUTOFSTOCK™ — style.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;700&display=swap');
+
+/* ─── RESET ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --bg: #0a0a08;
+  --bg-2: #111110;
+  --fg: #e8e4d9;
+  --fg-muted: #6b6860;
+  --fg-dim: #2e2d2b;
+  --accent: #c8f53a;
+  --accent-2: #ff3c1f;
+  --accent-3: #4f6ef7;
+  --border: #2a2926;
+  --border-light: #3e3c39;
+
+  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'Space Grotesk', sans-serif;
+}
+
+/* ─── BASE ────────────────────────────────────────────────── */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ─── NOISE OVERLAY ───────────────────────────────────────── */
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* ─── SCROLLBAR ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--fg-muted); }
+
+/* ─── SELECTION ───────────────────────────────────────────── */
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* ─── HEADER ──────────────────────────────────────────────── */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  mix-blend-mode: normal;
+}
+
+.logo {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg);
+  position: relative;
+}
+
+.logo::after {
+  content: '▮';
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--accent);
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+nav {
+  display: flex;
+  gap: 2.5rem;
+}
+
+nav a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  position: relative;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+
+nav a:hover {
+  color: var(--fg);
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+/* ─── HERO ────────────────────────────────────────────────── */
+main.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding-top: 80px;
+}
+
+/* ─── HERO TEXT ───────────────────────────────────────────── */
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 2.5rem 6rem 2.5rem;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+
+/* coordinate lines — brutalist detail */
+.hero-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2.5rem;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  opacity: 0.4;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--accent);
+}
+
+.hero-text h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 3.5vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  margin-bottom: 1.75rem;
+  /* subtle skew for unease */
+  transform: skewX(-0.4deg);
+}
+
+/* first word in red — glitch accent */
+.hero-text h1 span {
+  color: var(--accent-2);
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--fg-muted);
+  line-height: 1.7;
+  max-width: 38ch;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+/* ─── BUTTONS ─────────────────────────────────────────────── */
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.85rem 2rem;
+  display: inline-block;
+  transition: all 0.15s;
+  position: relative;
+  cursor: crosshair;
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+  font-weight: 700;
+}
+
+.primary-btn:hover {
+  background: transparent;
+  color: var(--accent);
+  /* box glitch on hover */
+  box-shadow: 3px 3px 0 var(--accent);
+  transform: translate(-3px, -3px);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--fg-muted);
+  border: 1px solid var(--border-light);
+}
+
+.secondary-btn:hover {
+  color: var(--fg);
+  border-color: var(--fg-muted);
+  box-shadow: 3px 3px 0 var(--fg-muted);
+  transform: translate(-3px, -3px);
+}
+
+/* ─── HERO VISUAL ─────────────────────────────────────────── */
+.hero-visual {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 6rem 2.5rem;
+  gap: 1.5rem;
+  position: relative;
+  background: var(--bg-2);
+
+  /* grid paper texture */
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-color: var(--bg-2);
+}
+
+/* ─── CARDS ───────────────────────────────────────────────── */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 340px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 4px 4px 0 var(--accent-3);
+}
+
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 0.75rem;
+}
+
+.card h2 {
+  font-family: var(--font-sans);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-bottom: 0.4rem;
+  line-height: 1.2;
+}
+
+.card p {
+  font-size: 0.82rem;
+  color: var(--fg-muted);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.card span {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+}
+
+/* corner marker — brutalist detail */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-2);
+}
+
+/* "SOLD OUT" stamp on second card */
+.second-card::after {
+  content: 'NOT YOURS';
+  position: absolute;
+  top: 50%;
+  right: -1rem;
+  transform: translateY(-50%) rotate(90deg);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  opacity: 0.6;
+}
+
+/* floating animation — off-kilter, sluggish */
+.floating-card {
+  animation: drift 6s ease-in-out infinite;
+}
+
+.second-card {
+  animation: drift 8s ease-in-out infinite reverse;
+  margin-left: 2rem;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-8px) rotate(-0.3deg); }
+  66%       { transform: translateY(4px) rotate(0.2deg); }
+}
+
+/* ─── TICKER / STATUS BAR ─────────────────────────────────── */
+/* optional: add a <div class="ticker"> element above or below the header */
+.ticker {
+  width: 100%;
+  background: var(--accent-2);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.4rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-inner {
+  display: inline-block;
+  animation: scroll-left 18s linear infinite;
+}
+
+@keyframes scroll-left {
+  0%   { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ─── UTILITY ─────────────────────────────────────────────── */
+a { color: inherit; }
+
+img { display: block; max-width: 100%; }
+
+/* ─── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  header {
+    padding: 1rem 1.25rem;
+  }
+
+  nav {
+    gap: 1.25rem;
+  }
+
+  main.hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-text {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 1.25rem 3rem;
+  }
+
+  .hero-visual {
+    padding: 3rem 1.25rem;
+  }
+
+  .second-card {
+    margin-left: 0;
+  }
+
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+}
