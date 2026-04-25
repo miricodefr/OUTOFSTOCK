@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart | OUTOFSTOCK™</title>
+  <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/cart.css' %}" />
+</head>
+<body class="theme-light inner-page-body">
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <header class="site-header">
+    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="collection.html">Collection</a>
+      <a href="login.html">Login</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="cart.html" class="active-link">Cart</a>
+    </nav>
+  </header>
+
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span>SIMULATED CHECKOUT</span><span class="dot-sep">◆</span>
+      <span>NO REAL PAYMENTS</span><span class="dot-sep">◆</span>
+      <span>CART FEATURE READY</span><span class="dot-sep">◆</span>
+    </div>
+  </div>
+
+  <main class="inner-page cart-layout">
+    <p class="section-label">SHOPPING CART</p>
+
+    <h1>Items in your cart</h1>
+
+    <div data-cart-items></div>
+      <p class="section-label">SHOPPING CART</p>
+      <h1>Items in your cart</h1>
+
+      <article class="cart-item-row">
+        <div class="cart-thumb placeholder-one"></div>
+        <div class="cart-copy">
+          <h3>Broken Synth Shell</h3>
+          <p>Prototype / Electronics</p>
+        </div>
+        <strong>€44</strong>
+      </article>
+
+      <article class="cart-item-row">
+        <div class="cart-thumb placeholder-four"></div>
+        <div class="cart-copy">
+          <h3>Manual Without Device</h3>
+          <p>Archive / Paper</p>
+        </div>
+        <strong>€9</strong>
+      </article>
+    </section>
+
+    <aside class="cart-summary">
+      <p class="section-label">SUMMARY</p>
+      <div class="summary-row"><span>Items</span><strong>2</strong></div>
+      <div class="summary-row"><span>Subtotal</span><strong>€53</strong></div>
+      <div class="summary-row"><span>Shipping</span><strong>€0</strong></div>
+      <div class="summary-row total-row"><span>Total</span><strong data-cart-total>€0.00</strong></div>
+      <button type="button" class="action-btn" data-checkout>Simulate Checkout</button>
+    </aside>
+  </main>
+
+  <script src="{% static 'store/js/script.js' %}"></script>
+  <script src="{% static 'store/js/cart.js' %}"></script>
+</body>
+</html>

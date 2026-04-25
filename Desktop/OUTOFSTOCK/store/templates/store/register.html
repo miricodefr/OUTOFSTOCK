@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | OUTOFSTOCK™</title>
+  <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/register.css' %}" />
+</head>
+<body class="theme-light inner-page-body">
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <header class="site-header">
+    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="collection.html">Collection</a>
+      <a href="login.html" class="active-link">Login</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+    </nav>
+  </header>
+
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span>NEW USER REGISTRATION</span><span class="dot-sep">◆</span>
+      <span>FORM VALIDATION NEXT</span><span class="dot-sep">◆</span>
+      <span>PROFILE PAGE READY</span><span class="dot-sep">◆</span>
+    </div>
+  </div>
+
+  <main class="inner-page auth-page">
+    <section class="auth-card-wrap single-wide">
+      <div class="auth-card wide-card">
+        <p class="section-label">CREATE ACCOUNT</p>
+        <h1>Register</h1>
+        <form class="auth-form two-column-form" data-register-form>
+          <label>First name
+            <input data-register-first-name type="text" placeholder="Miriad" />
+          </label>
+          <label>Last name
+            <input data-register-last-name type="text" placeholder="Codefr" />
+          </label>
+          <label>Email
+            <input data-register-email type="email" placeholder="you@example.com" />
+          </label>
+          <label>Username
+            <input data-register-username type="text" placeholder="archive_user" />
+          </label>
+          <label>Password
+            <input data-register-password type="password" placeholder="Create password" />
+          </label>
+          <label>Confirm password
+            <input type="password" placeholder="Repeat password" />
+          </label>
+          <button type="submit" class="action-btn auth-btn">Create Account</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="{% static 'store/js/script.js' %}"></script>
+  <script src="{% static 'store/js/register.js' %}"></script>
+</body>
+</html>
