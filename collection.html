@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Collection | OUTOFSTOCK™</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/collection.css" />
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
@@ -17,7 +18,7 @@
       <a href="collection.html" class="active-link">Collection</a>
       <a href="login.html">Login</a>
       <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -43,12 +44,12 @@
       <form class="filter-grid">
         <div class="filter-field">
           <label for="search">Search item</label>
-          <input id="search" type="text" placeholder="Broken synth, lamp, chair..." />
+          <input id="search" data-search type="text" placeholder="Broken synth, lamp, chair..." />
         </div>
         <div class="filter-field">
           <label for="condition">Condition</label>
-          <select id="condition">
-            <option>Any condition</option>
+          <select id="condition" data-status>
+            <option value="all">Any condition</option>
             <option>Prototype</option>
             <option>Unfinished</option>
             <option>Damaged</option>
@@ -57,8 +58,8 @@
         </div>
         <div class="filter-field">
           <label for="category">Category</label>
-          <select id="category">
-            <option>All categories</option>
+          <select id="category" data-type>
+            <option value="all">All categories</option>
             <option>Electronics</option>
             <option>Furniture</option>
             <option>Fashion</option>
@@ -84,7 +85,7 @@
         <p>Sorted by newest archive additions</p>
       </div>
 
-      <div class="catalog-grid">
+      <div class="catalog-grid" data-product-grid>
         <article class="catalog-card">
           <a href="item.html" class="catalog-image placeholder-one"><span>ITEM 01</span></a>
           <div class="catalog-copy">
@@ -128,6 +129,7 @@
     </section>
   </main>
 
-  <script src="js/script.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/collection.js"></script>
 </body>
 </html>

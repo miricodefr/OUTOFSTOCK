@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard | OUTOFSTOCK™</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
@@ -17,7 +18,7 @@
       <a href="collection.html">Collection</a>
       <a href="login.html">Login</a>
       <a href="dashboard.html" class="active-link">Dashboard</a>
-      <a href="cart.html">Cart</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -34,8 +35,14 @@
     <section class="dashboard-header">
       <div>
         <p class="section-label">PERSONAL DASHBOARD</p>
-        <h1>Welcome back, Miri.</h1>
+        <h1>Welcome back, <span data-user-name>Miriad</span>.</h1>
         <p class="page-intro">This page can later connect to Django user data, likes, recent activity, and purchases.</p>
+        <p data-user-email>Not logged in</p>
+      </div>
+
+      <div>
+        <a href="register.html" class="ghost-btn">Edit Profile</a>
+        <button type="button" class="ghost-btn" data-logout>Logout</button>
       </div>
       <a href="register.html" class="ghost-btn">Edit Profile</a>
     </section>
@@ -44,7 +51,12 @@
       <article class="stat-card"><span>Recent views</span><strong>8</strong></article>
       <article class="stat-card"><span>Wishlist items</span><strong>4</strong></article>
       <article class="stat-card"><span>Ratings given</span><strong>12</strong></article>
-      <article class="stat-card"><span>Cart items</span><strong>2</strong></article>
+      <article class="stat-card"><span>Cart items</span><strong data-dashboard-cart-count>0</strong></article>
+
+      <article class="stat-card">
+        <span>Cart total</span>
+        <strong data-dashboard-cart-total>€0.00</strong>
+      </article>
     </section>
 
     <section class="dashboard-panels">
@@ -78,6 +90,7 @@
     </section>
   </main>
 
-  <script src="js/script.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/dashboard.js"></script>
 </body>
 </html>

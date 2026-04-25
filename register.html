@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register | OUTOFSTOCK™</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/register.css" />
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
@@ -17,7 +18,7 @@
       <a href="collection.html">Collection</a>
       <a href="login.html" class="active-link">Login</a>
       <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -34,21 +35,21 @@
       <div class="auth-card wide-card">
         <p class="section-label">CREATE ACCOUNT</p>
         <h1>Register</h1>
-        <form class="auth-form two-column-form">
+        <form class="auth-form two-column-form" data-register-form>
           <label>First name
-            <input type="text" placeholder="Miri" />
+            <input data-register-first-name type="text" placeholder="Miriad" />
           </label>
           <label>Last name
-            <input type="text" placeholder="Codefr" />
+            <input data-register-last-name type="text" placeholder="Codefr" />
           </label>
           <label>Email
-            <input type="email" placeholder="you@example.com" />
+            <input data-register-email type="email" placeholder="you@example.com" />
           </label>
           <label>Username
-            <input type="text" placeholder="archive_user" />
+            <input data-register-username type="text" placeholder="archive_user" />
           </label>
           <label>Password
-            <input type="password" placeholder="Create password" />
+            <input data-register-password type="password" placeholder="Create password" />
           </label>
           <label>Confirm password
             <input type="password" placeholder="Repeat password" />
@@ -59,6 +60,7 @@
     </section>
   </main>
 
-  <script src="js/script.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/register.js"></script>
 </body>
 </html>

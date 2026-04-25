@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | OUTOFSTOCK™</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/login.css" />
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
@@ -17,7 +18,7 @@
       <a href="collection.html">Collection</a>
       <a href="login.html" class="active-link">Login</a>
       <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -34,12 +35,12 @@
       <div class="auth-card">
         <p class="section-label">MEMBER ACCESS</p>
         <h1>Login</h1>
-        <form class="auth-form">
+        <form class="auth-form" data-login-form>
           <label>Email
-            <input type="email" placeholder="you@example.com" />
+            <input data-login-email type="email" placeholder="you@example.com" />
           </label>
           <label>Password
-            <input type="password" placeholder="••••••••" />
+            <input data-login-password type="password" placeholder="••••••••" />
           </label>
           <button type="submit" class="action-btn auth-btn">Sign In</button>
         </form>
@@ -58,6 +59,7 @@
     </section>
   </main>
 
-  <script src="js/script.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/login.js"></script>
 </body>
 </html>

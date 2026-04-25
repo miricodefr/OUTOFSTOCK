@@ -1,0 +1,60 @@
+/* dashboard stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* stat card */
+.stat-card {
+  border-radius: 18px;
+  padding: 1.4rem;
+}
+
+/* stat label */
+.stat-card span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+/* stat number */
+.stat-card strong {
+  font-size: 2rem;
+}
+
+/* dashboard panels */
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* dashboard panel card */
+.dashboard-panel {
+  border-radius: 18px;
+  padding: 1.4rem;
+}
+
+/* panel title spacing */
+.dashboard-panel h2 {
+  margin-bottom: 1rem;
+}
+
+/* dashboard list item */
+.dashboard-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(23, 23, 23, 0.1);
+}
+
+/* first item has no line */
+.dashboard-list-item:first-of-type {
+  border-top: none;
+}

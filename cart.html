@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cart | OUTOFSTOCK™</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/cart.css" />
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
@@ -30,7 +31,11 @@
   </div>
 
   <main class="inner-page cart-layout">
-    <section class="cart-column">
+    <p class="section-label">SHOPPING CART</p>
+
+    <h1>Items in your cart</h1>
+
+    <div data-cart-items></div>
       <p class="section-label">SHOPPING CART</p>
       <h1>Items in your cart</h1>
 
@@ -58,11 +63,12 @@
       <div class="summary-row"><span>Items</span><strong>2</strong></div>
       <div class="summary-row"><span>Subtotal</span><strong>€53</strong></div>
       <div class="summary-row"><span>Shipping</span><strong>€0</strong></div>
-      <div class="summary-row total-row"><span>Total</span><strong>€53</strong></div>
-      <a href="#" class="action-btn">Simulate Checkout</a>
+      <div class="summary-row total-row"><span>Total</span><strong data-cart-total>€0.00</strong></div>
+      <button type="button" class="action-btn" data-checkout>Simulate Checkout</button>
     </aside>
   </main>
 
-  <script src="js/script.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/cart.js"></script>
 </body>
 </html>

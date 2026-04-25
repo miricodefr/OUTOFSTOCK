@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Item Detail | OUTOFSTOCK™</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/item.css" />
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
@@ -17,7 +18,7 @@
       <a href="collection.html">Collection</a>
       <a href="login.html">Login</a>
       <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -31,28 +32,28 @@
 
   <main class="inner-page">
     <section class="item-layout">
-      <div class="item-visual placeholder-one">
+      <div class="item-visual placeholder-one" data-item-image>
         <span>ITEM 01</span>
       </div>
 
       <div class="item-details">
         <p class="section-label">ELECTRONICS / PROTOTYPE</p>
-        <h1>Broken Synth Shell</h1>
-        <p class="item-price">€44</p>
-        <p class="item-description">
+        <h1 data-item-title>Broken Synth Shell</h1>
+        <p class="item-price" data-item-price>€44</p>
+        <p class="item-description" data-item-description>
           A prototype synthesizer shell rescued before disposal. No power supply included. Ideal for prop work, restoration practice,
           or display in a studio setup.
         </p>
 
         <div class="detail-list">
-          <div><span>Status</span><strong>Available</strong></div>
-          <div><span>Condition</span><strong>Damaged / Prototype</strong></div>
+          <div><span>Status</span><strong data-item-status>Available</strong></div>
+          <div><span>Condition</span><strong data-item-type>Damaged / Prototype</strong></div>
           <div><span>Color</span><strong>Black / Orange</strong></div>
           <div><span>Seller</span><strong>Archive Unit 07</strong></div>
         </div>
 
         <div class="item-actions">
-          <a href="cart.html" class="action-btn">Add to Cart</a>
+          <button type="button" class="action-btn" data-add-to-cart>Add to Cart</button>
           <a href="dashboard.html" class="ghost-btn">Save to Wishlist</a>
         </div>
 
@@ -86,6 +87,7 @@
     </section>
   </main>
 
-  <script src="js/script.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/item.js"></script>
 </body>
 </html>
