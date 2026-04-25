@@ -13,13 +13,13 @@
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <header class="site-header">
-    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
     <nav class="main-nav">
-      <a href="index.html">Home</a>
-      <a href="collection.html">Collection</a>
-      <a href="login.html">Login</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'products' %}">Collection</a>
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -55,7 +55,7 @@
 
         <div class="item-actions">
           <button type="button" class="action-btn" data-add-to-cart>Add to Cart</button>
-          <a href="dashboard.html" class="ghost-btn">Save to Wishlist</a>
+          <a href="{% url 'dashboard' %}" class="ghost-btn">Save to Wishlist</a>
         </div>
 
         <div class="rating-box">
@@ -69,17 +69,17 @@
     <section class="related-section">
       <div class="section-label">SIMILAR ITEMS</div>
       <div class="mini-grid">
-        <a href="item.html" class="mini-card">
+        <a href="{% url 'product_detail' %}" class="mini-card">
           <div class="mini-thumb placeholder-two"></div>
           <h3>Display Lamp Draft</h3>
           <p>€26</p>
         </a>
-        <a href="item.html" class="mini-card">
+        <a href="{% url 'product_detail' %}" class="mini-card">
           <div class="mini-thumb placeholder-three"></div>
           <h3>Control Panel Faceplate</h3>
           <p>€31</p>
         </a>
-        <a href="item.html" class="mini-card">
+        <a href="{% url 'product_detail' %}" class="mini-card">
           <div class="mini-thumb placeholder-four"></div>
           <h3>Manual Pack Bundle</h3>
           <p>€14</p>

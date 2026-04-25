@@ -1,4 +1,10 @@
 {% load static %}
+{% url 'home' %}
+{% url 'products' %}
+{% url 'cart' %}
+{% url 'dashboard' %}
+{% url 'login' %}
+{% url 'register' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,13 +19,13 @@
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <header class="site-header">
-    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
     <nav class="main-nav">
-      <a href="index.html">Home</a>
-      <a href="collection.html">Collection</a>
-      <a href="login.html" class="active-link">Login</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+      <a href="{% url 'home' %}"></a>Home</a>
+      <a href="{% url 'products' %}">Collection</a>
+      <a href="{% url 'login' %}" class="active-link">Login</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 

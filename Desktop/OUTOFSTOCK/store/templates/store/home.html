@@ -1,4 +1,10 @@
 {% load static %}
+{% url 'home' %}
+{% url 'products' %}
+{% url 'cart' %}
+{% url 'dashboard' %}
+{% url 'login' %}
+{% url 'register' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,14 +19,14 @@
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <header class="site-header">
-    <a href="index.html" class="logo" id="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo" id="logo">OUTOFSTOCK™</a>
 
     <nav class="main-nav">
-      <a href="index.html" class="active-link">Home</a>
-      <a href="collection.html">Collection</a>
-      <a href="login.html">Login</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart</a>
+      <a href="{% url 'home' %}" class="active-link">Home</a>
+      <a href="{% url 'products' %}">Collection</a>
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'cart' %}">Cart</a>
     </nav>
   </header>
 
@@ -53,7 +59,7 @@
         </div>
 
         <section class="screen-cluster" id="collection-preview">
-          <a href="item.html" class="sale-item screen-item screen-one" data-item="Item 01">
+          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-one" data-item="Item 01">
             <div class="screen-frame">
               <div class="screen-content placeholder placeholder-one">
                 <span>ITEM 01</span>
@@ -66,7 +72,7 @@
             </div>
           </a>
 
-          <a href="item.html" class="sale-item screen-item screen-two" data-item="Item 02">
+          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-two" data-item="Item 02">
             <div class="screen-frame">
               <div class="screen-content placeholder placeholder-two">
                 <span>ITEM 02</span>
@@ -79,7 +85,7 @@
             </div>
           </a>
 
-          <a href="item.html" class="sale-item screen-item screen-three" data-item="Item 03">
+          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-three" data-item="Item 03">
             <div class="screen-frame modern-frame">
               <div class="screen-content placeholder placeholder-three">
                 <span>ITEM 03</span>
@@ -88,7 +94,7 @@
             </div>
           </a>
 
-          <a href="item.html" class="sale-item screen-item screen-four" data-item="Item 04">
+          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-four" data-item="Item 04">
             <div class="screen-frame">
               <div class="screen-content placeholder placeholder-four">
                 <span>ITEM 04</span>
@@ -127,7 +133,7 @@
         OUTOFSTOCK™ is a marketplace for unfinished, strange, abandoned, or forgotten things.
         Browse strange inventory, save it to your cart, like your favorites, and build a profile around your archive.
       </p>
-      <a href="collection.html" class="action-btn">Browse Collection</a>
+      <a href="{% url 'products' %}" class="action-btn">Browse Collection</a>
     </section>
 
     <section class="sell-section" id="sell">

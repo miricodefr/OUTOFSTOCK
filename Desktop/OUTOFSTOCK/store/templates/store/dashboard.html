@@ -1,4 +1,10 @@
 {% load static %}
+{% url 'home' %}
+{% url 'products' %}
+{% url 'cart' %}
+{% url 'dashboard' %}
+{% url 'login' %}
+{% url 'register' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,13 +19,13 @@
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <header class="site-header">
-    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
     <nav class="main-nav">
-      <a href="index.html">Home</a>
-      <a href="collection.html">Collection</a>
-      <a href="login.html">Login</a>
-      <a href="dashboard.html" class="active-link">Dashboard</a>
-      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'products' %}">Collection</a>
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'dashboard' %}" class="active-link">Dashboard</a>
+      <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -42,10 +48,10 @@
       </div>
 
       <div>
-        <a href="register.html" class="ghost-btn">Edit Profile</a>
+        <a href="{% url 'register' %}" class="ghost-btn">Edit Profile</a>
         <button type="button" class="ghost-btn" data-logout>Logout</button>
       </div>
-      <a href="register.html" class="ghost-btn">Edit Profile</a>
+      <a href="{% url 'register' %}" class="ghost-btn">Edit Profile</a>
     </section>
 
     <section class="stats-grid">
@@ -65,15 +71,15 @@
         <h2>Recently viewed</h2>
         <div class="dashboard-list-item">
           <span>Broken Synth Shell</span>
-          <a href="item.html">Open</a>
+          <a href="{% url 'product_detail' %}">Open</a>
         </div>
         <div class="dashboard-list-item">
           <span>Half-Wired Lamp</span>
-          <a href="item.html">Open</a>
+          <a href="{% url 'product_detail' %}">Open</a>
         </div>
         <div class="dashboard-list-item">
           <span>Ceramic Draft</span>
-          <a href="item.html">Open</a>
+          <a href="{% url 'product_detail' %}">Open</a>
         </div>
       </article>
 
@@ -81,11 +87,11 @@
         <h2>Wishlist</h2>
         <div class="dashboard-list-item">
           <span>Manual Without Device</span>
-          <a href="cart.html">Move to cart</a>
+          <a href="{% url 'cart' %}">Move to cart</a>
         </div>
         <div class="dashboard-list-item">
           <span>Display Lamp Draft</span>
-          <a href="cart.html">Move to cart</a>
+          <a href="{% url 'cart' %}">Move to cart</a>
         </div>
       </article>
     </section>

@@ -1,4 +1,10 @@
 {% load static %}
+{% url 'home' %}
+{% url 'products' %}
+{% url 'cart' %}
+{% url 'dashboard' %}
+{% url 'login' %}
+{% url 'register' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,13 +19,13 @@
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <header class="site-header">
-    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
     <nav class="main-nav">
-      <a href="index.html">Home</a>
-      <a href="collection.html" class="active-link">Collection</a>
-      <a href="login.html">Login</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'products' %}" class="active-link">Collection</a>
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
     </nav>
   </header>
 
@@ -88,40 +94,40 @@
 
       <div class="catalog-grid" data-product-grid>
         <article class="catalog-card">
-          <a href="item.html" class="catalog-image placeholder-one"><span>ITEM 01</span></a>
+          <a href="{% url 'product_detail' %}" class="catalog-image placeholder-one"><span>ITEM 01</span></a>
           <div class="catalog-copy">
             <p class="catalog-meta">Electronics / Prototype</p>
-            <h3><a href="item.html">Broken Synth Shell</a></h3>
+            <h3><a href="{% url 'product_detail' %}">Broken Synth Shell</a></h3>
             <p>Display unit with missing internal boards and visible cosmetic damage.</p>
             <div class="catalog-row"><span>€44</span><span>Black / Orange</span></div>
           </div>
         </article>
 
         <article class="catalog-card">
-          <a href="item.html" class="catalog-image placeholder-two"><span>ITEM 02</span></a>
+          <a href="{% url 'product_detail' %}" class="catalog-image placeholder-two"><span>ITEM 02</span></a>
           <div class="catalog-copy">
             <p class="catalog-meta">Decor / Unfinished</p>
-            <h3><a href="item.html">Half-Wired Lamp</a></h3>
+            <h3><a href="{% url 'product_detail' %}">Half-Wired Lamp</a></h3>
             <p>Still powers on. Final shade and outer body were never added.</p>
             <div class="catalog-row"><span>€26</span><span>Blue / Chrome</span></div>
           </div>
         </article>
 
         <article class="catalog-card">
-          <a href="item.html" class="catalog-image placeholder-three"><span>ITEM 03</span></a>
+          <a href="{% url 'product_detail' %}" class="catalog-image placeholder-three"><span>ITEM 03</span></a>
           <div class="catalog-copy">
             <p class="catalog-meta">Decor / Handmade</p>
-            <h3><a href="item.html">Ceramic Draft</a></h3>
+            <h3><a href="{% url 'product_detail' %}">Ceramic Draft</a></h3>
             <p>An unfired vase study with asymmetrical handle and rough base.</p>
             <div class="catalog-row"><span>€18</span><span>Clay / Red</span></div>
           </div>
         </article>
 
         <article class="catalog-card">
-          <a href="item.html" class="catalog-image placeholder-four"><span>ITEM 04</span></a>
+          <a href="{% url 'product_detail' %}" class="catalog-image placeholder-four"><span>ITEM 04</span></a>
           <div class="catalog-copy">
             <p class="catalog-meta">Archive / Paper</p>
-            <h3><a href="item.html">Manual Without Device</a></h3>
+            <h3><a href="{% url 'product_detail' %}">Manual Without Device</a></h3>
             <p>The object is missing. The instructions survived.</p>
             <div class="catalog-row"><span>€9</span><span>White / Grey</span></div>
           </div>
