@@ -1,0 +1,29 @@
+/* register page layout */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+/* register content wrapper */
+.auth-card-wrap {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* single register card */
+.single-wide {
+  grid-template-columns: 1fr;
+}
+
+/* register card */
+.auth-card {
+  padding: 2rem;
+  border-radius: 22px;
+}
+
+/* wider form card */
+.wide-card {
+  max-width: 820px;
+}

@@ -1,0 +1,111 @@
+/* item page layout */
+.item-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* big product image */
+.item-visual {
+  min-height: 520px;
+  border-radius: 24px;
+}
+
+/* product price */
+.item-price {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+}
+
+/* product info list */
+.detail-list {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
+}
+
+/* product info row */
+.detail-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* lighter info label */
+.detail-list span {
+  opacity: 0.75;
+}
+
+/* buttons under product */
+.item-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* remove extra button spacing */
+.item-actions .action-btn,
+.item-actions .ghost-btn {
+  margin-top: 0;
+}
+
+/* rating section */
+.rating-box {
+  margin-top: 2rem;
+  padding: 1.4rem;
+  border: 1px solid rgba(23, 23, 23, 0.12);
+  border-radius: 16px;
+}
+
+/* rating title */
+.rating-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+}
+
+/* stars */
+.rating-stars {
+  font-size: 1.5rem;
+  letter-spacing: 0.25rem;
+  color: var(--orange);
+  margin-bottom: 0.7rem;
+}
+
+/* related items section */
+.related-section {
+  margin-top: 3rem;
+}
+
+/* related items grid */
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* small related card */
+.mini-card {
+  padding: 1rem;
+  border-radius: 18px;
+}
+
+/* small related image */
+.mini-thumb {
+  min-height: 150px;
+  border-radius: 14px;
+  margin-bottom: 1rem;
+}
+
+/* related item title */
+.mini-card h3 {
+  margin-bottom: 0.7rem;
+  font-size: 1.45rem;
+}

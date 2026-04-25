@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Item Detail | OUTOFSTOCK™</title>
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/item.css" />
+</head>
+<body class="theme-light inner-page-body">
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <header class="site-header">
+    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="collection.html">Collection</a>
+      <a href="login.html">Login</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+    </nav>
+  </header>
+
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span>ITEM PAGE</span><span class="dot-sep">◆</span>
+      <span>LIKES / RATINGS READY</span><span class="dot-sep">◆</span>
+      <span>SIMILAR ITEMS BELOW</span><span class="dot-sep">◆</span>
+    </div>
+  </div>
+
+  <main class="inner-page">
+    <section class="item-layout">
+      <div class="item-visual placeholder-one" data-item-image>
+        <span>ITEM 01</span>
+      </div>
+
+      <div class="item-details">
+        <p class="section-label">ELECTRONICS / PROTOTYPE</p>
+        <h1 data-item-title>Broken Synth Shell</h1>
+        <p class="item-price" data-item-price>€44</p>
+        <p class="item-description" data-item-description>
+          A prototype synthesizer shell rescued before disposal. No power supply included. Ideal for prop work, restoration practice,
+          or display in a studio setup.
+        </p>
+
+        <div class="detail-list">
+          <div><span>Status</span><strong data-item-status>Available</strong></div>
+          <div><span>Condition</span><strong data-item-type>Damaged / Prototype</strong></div>
+          <div><span>Color</span><strong>Black / Orange</strong></div>
+          <div><span>Seller</span><strong>Archive Unit 07</strong></div>
+        </div>
+
+        <div class="item-actions">
+          <button type="button" class="action-btn" data-add-to-cart>Add to Cart</button>
+          <a href="dashboard.html" class="ghost-btn">Save to Wishlist</a>
+        </div>
+
+        <div class="rating-box">
+          <p class="rating-title">User rating</p>
+          <div class="rating-stars">★ ★ ★ ★ ☆</div>
+          <p>4.0 / 5 from 12 archived reactions</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="related-section">
+      <div class="section-label">SIMILAR ITEMS</div>
+      <div class="mini-grid">
+        <a href="item.html" class="mini-card">
+          <div class="mini-thumb placeholder-two"></div>
+          <h3>Display Lamp Draft</h3>
+          <p>€26</p>
+        </a>
+        <a href="item.html" class="mini-card">
+          <div class="mini-thumb placeholder-three"></div>
+          <h3>Control Panel Faceplate</h3>
+          <p>€31</p>
+        </a>
+        <a href="item.html" class="mini-card">
+          <div class="mini-thumb placeholder-four"></div>
+          <h3>Manual Pack Bundle</h3>
+          <p>€14</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/shared.js"></script>
+  <script src="js/item.js"></script>
+</body>
+</html>

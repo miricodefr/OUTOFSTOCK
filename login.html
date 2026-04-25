@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | OUTOFSTOCK™</title>
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body class="theme-light inner-page-body">
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <header class="site-header">
+    <a href="index.html" class="logo">OUTOFSTOCK™</a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="collection.html">Collection</a>
+      <a href="login.html" class="active-link">Login</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+    </nav>
+  </header>
+
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span>USER LOGIN</span><span class="dot-sep">◆</span>
+      <span>REGISTER NEW ACCOUNT</span><span class="dot-sep">◆</span>
+      <span>ROLE-BASED ACCESS NEXT</span><span class="dot-sep">◆</span>
+    </div>
+  </div>
+
+  <main class="inner-page auth-page">
+    <section class="auth-card-wrap">
+      <div class="auth-card">
+        <p class="section-label">MEMBER ACCESS</p>
+        <h1>Login</h1>
+        <form class="auth-form" data-login-form>
+          <label>Email
+            <input data-login-email type="email" placeholder="you@example.com" />
+          </label>
+          <label>Password
+            <input data-login-password type="password" placeholder="••••••••" />
+          </label>
+          <button type="submit" class="action-btn auth-btn">Sign In</button>
+        </form>
+        <p class="auth-switch">No account yet? <a href="register.html">Create one here</a>.</p>
+      </div>
+
+      <div class="auth-card secondary-card">
+        <p class="section-label">WHY LOGIN</p>
+        <ul class="feature-list">
+          <li>Save wishlist items</li>
+          <li>Track recent views</li>
+          <li>Rate archive objects</li>
+          <li>Use the simulated cart</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/shared.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OUTOFSTOCK™</title>
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body class="theme-light">
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <header class="site-header">
+    <a href="index.html" class="logo" id="logo">OUTOFSTOCK™</a>
+
+    <nav class="main-nav">
+      <a href="index.html" class="active-link">Home</a>
+      <a href="collection.html">Collection</a>
+      <a href="login.html">Login</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span>ITEMS IN LIMBO</span><span class="dot-sep">◆</span>
+      <span>OBJECTS STILL EXISTING</span><span class="dot-sep">◆</span>
+      <span>ARCHIVE OPEN</span><span class="dot-sep">◆</span>
+      <span>UPLOAD YOUR UNFINISHED</span><span class="dot-sep">◆</span>
+      <span>404 THINGS FOUND</span><span class="dot-sep">◆</span>
+      <span>NO RETURNS</span><span class="dot-sep">◆</span>
+      <span>STILL HERE</span><span class="dot-sep">◆</span>
+    </div>
+  </div>
+
+  <main>
+    <section class="poster-hero" id="landing">
+      <div class="poster-body">
+        <div class="squiggle squiggle-one"></div>
+        <div class="squiggle squiggle-two"></div>
+        <div class="squiggle squiggle-three"></div>
+
+        <div class="floating-shape" aria-hidden="true">
+          <div class="shape-head"></div>
+          <div class="shape-body"></div>
+          <div class="shape-leg leg-one"></div>
+          <div class="shape-leg leg-two"></div>
+          <div class="shape-arm arm-one"></div>
+          <div class="shape-arm arm-two"></div>
+        </div>
+
+        <section class="screen-cluster" id="collection-preview">
+          <a href="item.html" class="sale-item screen-item screen-one" data-item="Item 01">
+            <div class="screen-frame">
+              <div class="screen-content placeholder placeholder-one">
+                <span>ITEM 01</span>
+                <p>Broken synth shell</p>
+              </div>
+              <div class="screen-controls">
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </a>
+
+          <a href="item.html" class="sale-item screen-item screen-two" data-item="Item 02">
+            <div class="screen-frame">
+              <div class="screen-content placeholder placeholder-two">
+                <span>ITEM 02</span>
+                <p>Display unit / prototype</p>
+              </div>
+              <div class="screen-controls">
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </a>
+
+          <a href="item.html" class="sale-item screen-item screen-three" data-item="Item 03">
+            <div class="screen-frame modern-frame">
+              <div class="screen-content placeholder placeholder-three">
+                <span>ITEM 03</span>
+                <p>Unfinished ceramic draft</p>
+              </div>
+            </div>
+          </a>
+
+          <a href="item.html" class="sale-item screen-item screen-four" data-item="Item 04">
+            <div class="screen-frame">
+              <div class="screen-content placeholder placeholder-four">
+                <span>ITEM 04</span>
+                <p>Manual without device</p>
+              </div>
+              <div class="screen-controls">
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </a>
+        </section>
+
+        <section class="poster-title-block">
+          <div class="poster-title-left">
+            <h1>OUTOFSTOCK</h1>
+          </div>
+
+          <div class="poster-title-right">
+            <h2>ARCHIVE</h2>
+
+            <div class="color-dots">
+              <button class="dot dark" data-theme="dark" aria-label="Use dark theme"></button>
+              <button class="dot orange" data-theme="orange" aria-label="Use orange theme"></button>
+              <button class="dot light is-active" data-theme="light" aria-label="Use light theme"></button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="manifesto-section" id="about">
+      <div class="section-label">SYSTEM_NOTE</div>
+      <h2>Objects do not disappear just because people stop wanting them.</h2>
+      <p>
+        OUTOFSTOCK™ is a marketplace for unfinished, strange, abandoned, or forgotten things.
+        Browse strange inventory, save it to your cart, like your favorites, and build a profile around your archive.
+      </p>
+      <a href="collection.html" class="action-btn">Browse Collection</a>
+    </section>
+
+    <section class="sell-section" id="sell">
+      <div class="section-label">NEXT_STEPS</div>
+      <h2>The site is growing into the full course project.</h2>
+      <p>
+        The next pages now exist for catalogue browsing, item details, user login, dashboard activity, and shopping cart simulation.
+      </p>
+    </section>
+  </main>
+
+  <script src="js/shared.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>
