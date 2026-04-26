@@ -483,3 +483,95 @@ body.theme-dark .ghost-btn:hover {
     grid-template-columns: 1fr;
   }
 }
+/* ghost-btn on light inner pages uses dark ink */
+.inner-page-body .ghost-btn {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.inner-page-body .ghost-btn:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+/* action-btn always orange — readable on any background */
+.action-btn {
+  color: var(--orange);
+  border-color: var(--orange);
+  background: transparent;
+}
+
+/* strip big top margin from buttons inside panels and forms */
+.item-actions .action-btn,
+.item-actions .ghost-btn,
+.auth-card .action-btn,
+.auth-card .ghost-btn,
+.cart-summary .action-btn,
+.filter-panel .action-btn,
+.filter-panel .ghost-btn,
+.auth-btn {
+  margin-top: 0;
+}
+
+/* dark theme buttons */
+body.theme-dark .action-btn {
+  color: var(--orange);
+  border-color: var(--orange);
+  background: transparent;
+}
+body.theme-dark .action-btn:hover {
+  background: var(--orange);
+  color: #fff;
+}
+body.theme-dark .inner-page-body .ghost-btn,
+body.theme-dark .ghost-btn {
+  color: #f3efe9;
+  border-color: #f3efe9;
+}
+body.theme-dark .inner-page-body .ghost-btn:hover,
+body.theme-dark .ghost-btn:hover {
+  background: #f3efe9;
+  color: #111319;
+}
+
+/* dark theme inputs */
+body.theme-dark .filter-field input,
+body.theme-dark .filter-field select,
+body.theme-dark .auth-form input,
+body.theme-dark .auth-form select {
+  background: #1e2028;
+  border-color: #3a3e4a;
+  color: #f3efe9;
+}
+
+/* dark theme text that was staying black */
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark p,
+body.theme-dark label,
+body.theme-dark .catalog-top-bar,
+body.theme-dark .page-intro,
+body.theme-dark .catalog-copy p,
+body.theme-dark .catalog-copy h3,
+body.theme-dark .catalog-copy h3 a,
+body.theme-dark .catalog-meta,
+body.theme-dark .item-description,
+body.theme-dark .cart-copy p,
+body.theme-dark .cart-copy h3,
+body.theme-dark .summary-row,
+body.theme-dark .summary-row span,
+body.theme-dark .stat-card span,
+body.theme-dark .stat-card strong,
+body.theme-dark .dashboard-list-item,
+body.theme-dark .detail-list span,
+body.theme-dark .detail-list strong,
+body.theme-dark .auth-switch,
+body.theme-dark .feature-list li,
+body.theme-dark .rating-box p {
+  color: #f3efe9;
+}
+
+/* ticker slightly slower */
+.ticker-track {
+  animation-duration: 40s;
+}

@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +18,7 @@
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>  {# new #}
+        <a href="{% url 'logout' %}">Logout</a>
       {% else %}
         <a href="{% url 'login' %}">Login</a>
       {% endif %}
@@ -32,46 +31,87 @@
     <div class="ticker-track" id="tickerTrack">
       <span>SIMULATED CHECKOUT</span><span class="dot-sep">◆</span>
       <span>NO REAL PAYMENTS</span><span class="dot-sep">◆</span>
-      <span>CART FEATURE READY</span><span class="dot-sep">◆</span>
+      <span>DISCOUNT CODES AVAILABLE</span><span class="dot-sep">◆</span>
     </div>
   </div>
 
   <main class="inner-page cart-layout">
-    <p class="section-label">SHOPPING CART</p>
-    <h1>Items in your cart</h1>
+    <div>
+      <p class="section-label">SHOPPING CART</p>
+      <h1>Items in your cart</h1>
 
-    {# new: show real cart items from database #}
-    {% if user.is_authenticated %}
-      {% for item in cart_items %}
-      <article class="cart-item-row">
-        <div class="cart-thumb placeholder-one"></div>
-        <div class="cart-copy">
-          <h3>{{ item.product.name }}</h3>
-          <p>{{ item.product.category.name }} / Qty: {{ item.quantity }}</p>
-        </div>
-        <strong>€{{ item.product.price }}</strong>
-        {# new: remove button #}
-        <a href="{% url 'remove_from_cart' item.id %}" class="ghost-btn" style="margin-left:1rem;">Remove</a>
-      </article>
-      {% empty %}
-        <p>Your cart is empty. <a href="{% url 'products' %}">Browse the collection.</a></p>
-      {% endfor %}
-    {% else %}
-      {# new: prompt to login #}
-      <p>Please <a href="{% url 'login' %}">log in</a> to use your cart.</p>
-    {% endif %}
+      {% if user.is_authenticated %}
+        {% for item in cart_items %}
+        <article class="cart-item-row">
+          <div class="cart-thumb placeholder-one"></div>
+          <div class="cart-copy">
+            <h3>{{ item.product.name }}</h3>
+            <p>{{ item.product.category.name }} / Qty: {{ item.quantity }}</p>
+          </div>
+          <strong>€{{ item.product.price }}</strong>
+          <a href="{% url 'remove_from_cart' item.id %}"
+             style="display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1rem;border:1px solid var(--ink);color:var(--ink);border-radius:8px;cursor:pointer;transition:all 0.2s;text-decoration:none;margin-left:0.5rem;">
+            Remove
+          </a>
+        </article>
+        {% empty %}
+          <p>Your cart is empty. <a href="{% url 'products' %}">Browse the collection.</a></p>
+        {% endfor %}
+      {% else %}
+        <p>Please <a href="{% url 'login' %}">log in</a> to use your cart.</p>
+      {% endif %}
+    </div>
 
     <aside class="cart-summary">
       <p class="section-label">SUMMARY</p>
-      <div class="summary-row"><span>Items</span><strong>{{ cart_items|length }}</strong></div>  {# new #}
-      <div class="summary-row"><span>Subtotal</span><strong>€{{ total }}</strong></div>           {# new #}
+      <div class="summary-row"><span>Items</span><strong>{{ cart_items|length }}</strong></div>
+      <div class="summary-row"><span>Subtotal</span><strong>€{{ subtotal }}</strong></div>
+      {% if discount_pct %}
+        <div class="summary-row" style="color:var(--orange);">
+          <span>Discount ({{ discount_pct }}% off)</span>
+          <strong>-€{{ discount_amount }}</strong>
+        </div>
+      {% endif %}
       <div class="summary-row"><span>Shipping</span><strong>€0</strong></div>
-      <div class="summary-row total-row"><span>Total</span><strong>€{{ total }}</strong></div>    {# new #}
-      <button type="button" class="action-btn" data-checkout>Simulate Checkout</button>
+      <div class="summary-row total-row">
+        <span>Total</span>
+        <strong>€{% if discount_pct %}{{ final_total }}{% else %}{{ total }}{% endif %}</strong>
+      </div>
+
+      {% if user.is_authenticated %}
+      <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(23,23,23,0.1);">
+        <p style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:0.6rem;">Discount code</p>
+        {% if applied_code %}
+          <p style="font-family:var(--font-mono);font-size:0.82rem;color:var(--orange);">
+            {{ applied_code }} applied ({{ discount_pct }}% off)
+            <a href="{% url 'remove_code' %}" style="margin-left:0.75rem;color:var(--orange);">&times; Remove</a>
+          </p>
+        {% else %}
+          <form method="POST" action="{% url 'apply_code' %}">
+            {% csrf_token %}
+            <div style="display:flex;gap:0.5rem;margin-top:0.4rem;">
+              <input name="code" type="text" placeholder="ENTER CODE"
+                     style="flex:1;border:1px solid rgba(23,23,23,0.2);background:rgba(255,255,255,0.7);padding:0.6rem 0.8rem;border-radius:8px;font-family:var(--font-mono);font-size:0.78rem;text-transform:uppercase;">
+              <button type="submit" class="action-btn" style="padding:0.6rem 1rem;margin-top:0;">Apply</button>
+            </div>
+          </form>
+          {% if request.session.code_error %}
+            <p style="color:red;font-family:var(--font-mono);font-size:0.78rem;margin-top:0.4rem;">{{ request.session.code_error }}</p>
+          {% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if user.is_authenticated and cart_items %}
+        <form method="POST" action="{% url 'checkout' %}">
+          {% csrf_token %}
+          <button type="submit" class="action-btn" style="width:100%;margin-top:1rem;">Simulate Checkout</button>
+        </form>
+      {% endif %}
     </aside>
   </main>
 
-  <script src="{% static 'store/js/script.js' %}"></script>
+  <script src="{% static 'store/js/shared.js' %}"></script>
   <script src="{% static 'store/js/cart.js' %}"></script>
 </body>
 </html>
