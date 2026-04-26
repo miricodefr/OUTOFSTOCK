@@ -118,6 +118,19 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+import os 
+ 
+STATIC_URL = 'static/'
+ 
+# uploaded product images are stored
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+ 
+# where to send users after login/logout
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+ 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

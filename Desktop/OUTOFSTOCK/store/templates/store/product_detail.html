@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Item Detail | OUTOFSTOCK™</title>
+  <title>{{ product.name }} | OUTOFSTOCK™</title>  {# new: dynamic title #}
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
   <link rel="stylesheet" href="{% static 'store/css/item.css' %}" />
 </head>
@@ -18,7 +18,11 @@
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
-      <a href="{% url 'login' %}">Login</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a>  {# new #}
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
       <a href="{% url 'dashboard' %}">Dashboard</a>
       <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
     </nav>
@@ -34,59 +38,102 @@
 
   <main class="inner-page">
     <section class="item-layout">
+
+      {# new: show product image if it exists, otherwise show placeholder #}
       <div class="item-visual placeholder-one" data-item-image>
-        <span>ITEM 01</span>
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;">
+        {% else %}
+          <span>{{ product.name }}</span>
+        {% endif %}
       </div>
 
       <div class="item-details">
-        <p class="section-label">ELECTRONICS / PROTOTYPE</p>
-        <h1 data-item-title>Broken Synth Shell</h1>
-        <p class="item-price" data-item-price>€44</p>
-        <p class="item-description" data-item-description>
-          A prototype synthesizer shell rescued before disposal. No power supply included. Ideal for prop work, restoration practice,
-          or display in a studio setup.
-        </p>
+        {# new: dynamic category and brand #}
+        <p class="section-label">{{ product.category.name }} / {{ product.brand }}</p>
+        <h1 data-item-title>{{ product.name }}</h1>
+        <p class="item-price" data-item-price>€{{ product.price }}</p>
+        <p class="item-description" data-item-description>{{ product.description }}</p>
 
         <div class="detail-list">
-          <div><span>Status</span><strong data-item-status>Available</strong></div>
-          <div><span>Condition</span><strong data-item-type>Damaged / Prototype</strong></div>
-          <div><span>Color</span><strong>Black / Orange</strong></div>
-          <div><span>Seller</span><strong>Archive Unit 07</strong></div>
+          {# new: dynamic stock status #}
+          <div><span>Status</span><strong>{% if product.stock > 0 %}Available ({{ product.stock }} left){% else %}Out of Stock{% endif %}</strong></div>
+          <div><span>Category</span><strong>{{ product.category.name }}</strong></div>
+          {# new: dynamic seller name #}
+          <div><span>Seller</span><strong>{{ product.owner.username|default:"Unknown" }}</strong></div>
         </div>
 
         <div class="item-actions">
-          <button type="button" class="action-btn" data-add-to-cart>Add to Cart</button>
+          {# new: add to cart form — only if logged in and in stock #}
+          {% if user.is_authenticated and product.stock > 0 %}
+            <form method="post" action="{% url 'add_to_cart' product.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="action-btn">Add to Cart</button>
+            </form>
+          {% elif not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="action-btn">Login to Buy</a>
+          {% else %}
+            <button type="button" class="action-btn" disabled>Out of Stock</button>
+          {% endif %}
           <a href="{% url 'dashboard' %}" class="ghost-btn">Save to Wishlist</a>
         </div>
 
+        {# new: show average rating if reviews exist #}
+        {% if reviews %}
         <div class="rating-box">
           <p class="rating-title">User rating</p>
-          <div class="rating-stars">★ ★ ★ ★ ☆</div>
-          <p>4.0 / 5 from 12 archived reactions</p>
+          <div class="rating-stars">
+            {% for review in reviews %}★{% endfor %}
+          </div>
+          <p>{{ reviews.count }} review(s)</p>
         </div>
+        {% endif %}
       </div>
     </section>
 
+    {# new: review form for logged-in users #}
+    {% if user.is_authenticated %}
+    <section class="inner-page" style="margin-top:2rem;">
+      <p class="section-label">LEAVE A REVIEW</p>
+      <form method="post">
+        {% csrf_token %}
+        <label>Rating (1–5):
+          <select name="rating">
+            <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+          </select>
+        </label>
+        <label style="display:block;margin-top:0.5rem;">Comment:
+          <textarea name="comment" rows="3" style="width:100%;margin-top:0.25rem;"></textarea>
+        </label>
+        <button type="submit" class="ghost-btn" style="margin-top:0.5rem;">Submit Review</button>
+      </form>
+
+      {# new: show existing reviews #}
+      {% for review in reviews %}
+      <div style="margin-top:1rem;border-top:1px solid #ccc;padding-top:0.5rem;">
+        <strong>{{ review.user.username }}</strong> — {{ review.rating }}/5
+        <p>{{ review.comment }}</p>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {# new: dynamic recommended products from same category #}
+    {% if recommended %}
     <section class="related-section">
       <div class="section-label">SIMILAR ITEMS</div>
       <div class="mini-grid">
-        <a href="{% url 'product_detail' %}" class="mini-card">
+        {% for item in recommended %}
+        <a href="{% url 'product_detail' item.id %}" class="mini-card">
           <div class="mini-thumb placeholder-two"></div>
-          <h3>Display Lamp Draft</h3>
-          <p>€26</p>
+          <h3>{{ item.name }}</h3>
+          <p>€{{ item.price }}</p>
         </a>
-        <a href="{% url 'product_detail' %}" class="mini-card">
-          <div class="mini-thumb placeholder-three"></div>
-          <h3>Control Panel Faceplate</h3>
-          <p>€31</p>
-        </a>
-        <a href="{% url 'product_detail' %}" class="mini-card">
-          <div class="mini-thumb placeholder-four"></div>
-          <h3>Manual Pack Bundle</h3>
-          <p>€14</p>
-        </a>
+        {% endfor %}
       </div>
     </section>
+    {% endif %}
+
   </main>
 
   <script src="{% static 'store/js/script.js' %}"></script>

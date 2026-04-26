@@ -36,12 +36,20 @@
       <div class="auth-card">
         <p class="section-label">MEMBER ACCESS</p>
         <h1>Login</h1>
-        <form class="auth-form" data-login-form>
-          <label>Email
-            <input data-login-email type="email" placeholder="you@example.com" />
+
+        {# new: show error if login failed #}
+        {% if error %}
+          <p style="color:red;">{{ error }}</p>
+        {% endif %}
+
+        {# new: changed to Django POST form with csrf_token and username field #}
+        <form class="auth-form" method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <label>Username
+            <input name="username" type="text" placeholder="archive_user" />
           </label>
           <label>Password
-            <input data-login-password type="password" placeholder="••••••••" />
+            <input name="password" type="password" placeholder="••••••••" />
           </label>
           <button type="submit" class="action-btn auth-btn">Sign In</button>
         </form>

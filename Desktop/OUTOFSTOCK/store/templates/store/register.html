@@ -37,24 +37,30 @@
       <div class="auth-card wide-card">
         <p class="section-label">CREATE ACCOUNT</p>
         <h1>Register</h1>
-        <form class="auth-form two-column-form" data-register-form>
-          <label>First name
-            <input data-register-first-name type="text" placeholder="Miriad" />
-          </label>
-          <label>Last name
-            <input data-register-last-name type="text" placeholder="Codefr" />
-          </label>
+
+        {# new: show error if registration failed #}
+        {% if error %}
+          <p style="color:red;">{{ error }}</p>
+        {% endif %}
+
+        {# new: real Django POST form with csrf_token #}
+        <form class="auth-form two-column-form" method="post" action="{% url 'register' %}">
+          {% csrf_token %}
           <label>Email
-            <input data-register-email type="email" placeholder="you@example.com" />
+            <input name="email" type="email" placeholder="you@example.com" />
           </label>
           <label>Username
-            <input data-register-username type="text" placeholder="archive_user" />
+            <input name="username" type="text" placeholder="archive_user" />
           </label>
           <label>Password
-            <input data-register-password type="password" placeholder="Create password" />
+            <input name="password" type="password" placeholder="Create password" />
           </label>
-          <label>Confirm password
-            <input type="password" placeholder="Repeat password" />
+          {# new: role selection so buyers and sellers can register correctly #}
+          <label>Role
+            <select name="role">
+              <option value="buyer">Buyer</option>
+              <option value="seller">Seller</option>
+            </select>
           </label>
           <button type="submit" class="action-btn auth-btn">Create Account</button>
         </form>

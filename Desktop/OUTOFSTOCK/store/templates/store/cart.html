@@ -18,7 +18,11 @@
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
-      <a href="{% url 'login' %}">Login</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a>  {# new #}
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
       <a href="{% url 'dashboard' %}">Dashboard</a>
       <a href="{% url 'cart' %}" class="active-link">Cart</a>
     </nav>
@@ -34,38 +38,35 @@
 
   <main class="inner-page cart-layout">
     <p class="section-label">SHOPPING CART</p>
-
     <h1>Items in your cart</h1>
 
-    <div data-cart-items></div>
-      <p class="section-label">SHOPPING CART</p>
-      <h1>Items in your cart</h1>
-
+    {# new: show real cart items from database #}
+    {% if user.is_authenticated %}
+      {% for item in cart_items %}
       <article class="cart-item-row">
         <div class="cart-thumb placeholder-one"></div>
         <div class="cart-copy">
-          <h3>Broken Synth Shell</h3>
-          <p>Prototype / Electronics</p>
+          <h3>{{ item.product.name }}</h3>
+          <p>{{ item.product.category.name }} / Qty: {{ item.quantity }}</p>
         </div>
-        <strong>€44</strong>
+        <strong>€{{ item.product.price }}</strong>
+        {# new: remove button #}
+        <a href="{% url 'remove_from_cart' item.id %}" class="ghost-btn" style="margin-left:1rem;">Remove</a>
       </article>
-
-      <article class="cart-item-row">
-        <div class="cart-thumb placeholder-four"></div>
-        <div class="cart-copy">
-          <h3>Manual Without Device</h3>
-          <p>Archive / Paper</p>
-        </div>
-        <strong>€9</strong>
-      </article>
-    </section>
+      {% empty %}
+        <p>Your cart is empty. <a href="{% url 'products' %}">Browse the collection.</a></p>
+      {% endfor %}
+    {% else %}
+      {# new: prompt to login #}
+      <p>Please <a href="{% url 'login' %}">log in</a> to use your cart.</p>
+    {% endif %}
 
     <aside class="cart-summary">
       <p class="section-label">SUMMARY</p>
-      <div class="summary-row"><span>Items</span><strong>2</strong></div>
-      <div class="summary-row"><span>Subtotal</span><strong>€53</strong></div>
+      <div class="summary-row"><span>Items</span><strong>{{ cart_items|length }}</strong></div>  {# new #}
+      <div class="summary-row"><span>Subtotal</span><strong>€{{ total }}</strong></div>           {# new #}
       <div class="summary-row"><span>Shipping</span><strong>€0</strong></div>
-      <div class="summary-row total-row"><span>Total</span><strong data-cart-total>€0.00</strong></div>
+      <div class="summary-row total-row"><span>Total</span><strong>€{{ total }}</strong></div>    {# new #}
       <button type="button" class="action-btn" data-checkout>Simulate Checkout</button>
     </aside>
   </main>

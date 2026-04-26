@@ -1,5 +1,4 @@
 {% load static %}
-}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +18,11 @@
     <nav class="main-nav">
       <a href="{% url 'home' %}" class="active-link">Home</a>
       <a href="{% url 'products' %}">Collection</a>
-      <a href="{% url 'login' %}">Login</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a>  {# new: show logout when logged in #}
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
       <a href="{% url 'dashboard' %}">Dashboard</a>
       <a href="{% url 'cart' %}">Cart</a>
     </nav>
@@ -54,7 +57,8 @@
         </div>
 
         <section class="screen-cluster" id="collection-preview">
-          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-one" data-item="Item 01">
+          {# new: link to products page instead of broken product_detail #}
+          <a href="{% url 'products' %}" class="sale-item screen-item screen-one" data-item="Item 01">
             <div class="screen-frame">
               <div class="screen-content placeholder placeholder-one">
                 <span>ITEM 01</span>
@@ -67,7 +71,7 @@
             </div>
           </a>
 
-          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-two" data-item="Item 02">
+          <a href="{% url 'products' %}" class="sale-item screen-item screen-two" data-item="Item 02">
             <div class="screen-frame">
               <div class="screen-content placeholder placeholder-two">
                 <span>ITEM 02</span>
@@ -80,7 +84,7 @@
             </div>
           </a>
 
-          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-three" data-item="Item 03">
+          <a href="{% url 'products' %}" class="sale-item screen-item screen-three" data-item="Item 03">
             <div class="screen-frame modern-frame">
               <div class="screen-content placeholder placeholder-three">
                 <span>ITEM 03</span>
@@ -89,7 +93,7 @@
             </div>
           </a>
 
-          <a href="{% url 'product_detail' %}" class="sale-item screen-item screen-four" data-item="Item 04">
+          <a href="{% url 'products' %}" class="sale-item screen-item screen-four" data-item="Item 04">
             <div class="screen-frame">
               <div class="screen-content placeholder placeholder-four">
                 <span>ITEM 04</span>
