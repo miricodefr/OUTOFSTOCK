@@ -1,23 +1,20 @@
-/* login form check */
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.querySelector("[data-login-form]");
+/* login page only script */
 
+
+/* check that both fields are filled before the form submits */
+document.addEventListener("DOMContentLoaded", function () {
+
+  var form = document.querySelector(".auth-form");
   if (!form) return;
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
+  form.addEventListener("submit", function (e) {
+    var username = document.querySelector("[name='username']");
+    var password = document.querySelector("[name='password']");
 
-    const email = document.querySelector("[data-login-email]").value;
-    const password = document.querySelector("[data-login-password]").value;
-
-    if (email === "" || password === "") {
-      alert("Please fill in all fields");
-      return;
+    if (!username.value.trim() || !password.value.trim()) {
+      e.preventDefault();
+      alert("Please fill in both fields.");
     }
-
-    localStorage.setItem(userKey, email);
-
-    alert("Logged in successfully");
-    window.location.href = "dashboard.html";
   });
+
 });

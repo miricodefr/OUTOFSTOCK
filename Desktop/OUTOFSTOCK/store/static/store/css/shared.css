@@ -1,7 +1,7 @@
-/* fonts */
+/* import the two fonts used across the whole site */
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&display=swap");
 
-/* reset default browser spacing */
+/* remove all default browser spacing */
 *,
 *::before,
 *::after {
@@ -10,7 +10,7 @@
   padding: 0;
 }
 
-/* colors used across the website */
+/* global color variables */
 :root {
   --header-height: 62px;
   --ticker-height: 28px;
@@ -29,16 +29,74 @@
   --font-main: "Space Grotesk", sans-serif;
   --font-mono: "Space Mono", monospace;
 
-  --page-bg: #efe8e2;
+  /* these two change with each theme */
+  --page-bg:   #efe8e2;
   --page-text: #171717;
+
+  /* button colors adapt to the theme automatically */
+  --btn-border: #171717;
+  --btn-text:   #171717;
+  --btn-hover-bg: #171717;
+  --btn-hover-text: #efe8e2;
+
+  /* card and input surface colors */
+  --card-bg:    rgba(255,255,255,0.35);
+  --card-border: rgba(23,23,23,0.1);
+  --input-bg:   rgba(255,255,255,0.7);
+  --input-border: rgba(23,23,23,0.16);
+  --divider: rgba(23,23,23,0.1);
 }
 
-/* smooth scrolling cause it looks better */
+/* light theme — same as default */
+body.theme-light {
+  --page-bg:   #efe8e2;
+  --page-text: #171717;
+  --btn-border: #171717;
+  --btn-text:   #171717;
+  --btn-hover-bg: #171717;
+  --btn-hover-text: #efe8e2;
+  --card-bg:    rgba(255,255,255,0.35);
+  --card-border: rgba(23,23,23,0.1);
+  --input-bg:   rgba(255,255,255,0.7);
+  --input-border: rgba(23,23,23,0.2);
+  --divider: rgba(23,23,23,0.1);
+}
+
+/* orange theme */
+body.theme-orange {
+  --page-bg:   #f2b183;
+  --page-text: #1d130c;
+  --btn-border: #1d130c;
+  --btn-text:   #1d130c;
+  --btn-hover-bg: #1d130c;
+  --btn-hover-text: #f2b183;
+  --card-bg:    rgba(255,255,255,0.3);
+  --card-border: rgba(29,19,12,0.12);
+  --input-bg:   rgba(255,255,255,0.6);
+  --input-border: rgba(29,19,12,0.2);
+  --divider: rgba(29,19,12,0.1);
+}
+
+/* dark theme — all light colors */
+body.theme-dark {
+  --page-bg:   #111319;
+  --page-text: #f3efe9;
+  --btn-border: #f3efe9;
+  --btn-text:   #f3efe9;
+  --btn-hover-bg: #f3efe9;
+  --btn-hover-text: #111319;
+  --card-bg:    #17191f;
+  --card-border: #2f333d;
+  --input-bg:   #1f2229;
+  --input-border: #3a3f4a;
+  --divider: rgba(255,255,255,0.08);
+}
+
 html {
   scroll-behavior: smooth;
 }
 
-/* main body styling */
+/* default body style for the dark home page */
 body {
   background: var(--bg);
   color: var(--text);
@@ -48,44 +106,21 @@ body {
   cursor: crosshair;
 }
 
-/* light theme colors */
-body.theme-light {
-  --page-bg: #efe8e2;
-  --page-text: #171717;
-}
-
-/* orange theme colors */
-body.theme-orange {
-  --page-bg: #f2b183;
-  --page-text: #1d130c;
-}
-
-/* dark theme colors */
-body.theme-dark {
-  --page-bg: #111319;
-  --page-text: #f3efe9;
-}
-
-/* basic link styling */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* makes sure images dont overflow */
 img {
   display: block;
   max-width: 100%;
 }
 
-/* keeps form elements using the same font */
-button,
-input,
-select {
+button, input, select, textarea {
   font: inherit;
 }
 
-/* background noise layer */
+/* grain texture overlay that does not block clicks */
 .noise {
   position: fixed;
   inset: 0;
@@ -96,61 +131,48 @@ select {
   background-size: 220px 220px;
 }
 
-/* orange mouse glow */
+/* orange glow circle that follows the mouse */
 .cursor-glow {
   position: fixed;
-  left: 0;
-  top: 0;
-  width: 380px;
-  height: 380px;
+  left: 0; top: 0;
+  width: 380px; height: 380px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
   opacity: 0;
   transform: translate(-50%, -50%);
   transition: opacity 0.3s ease;
-  background: radial-gradient(circle, rgba(248, 90, 31, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(248,90,31,0.08) 0%, transparent 70%);
 }
 
-/* custom scrollbar */
-::-webkit-scrollbar {
-  width: 7px;
-}
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #5b5650; }
 
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: #5b5650;
-}
-
-/* top navbar */
+/* fixed top navigation bar */
 .site-header {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   z-index: 100;
   min-height: var(--header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.95rem 2rem;
-  background: rgba(11, 11, 9, 0.96);
+  background: rgba(11,11,9,0.96);
   backdrop-filter: blur(8px);
 }
 
-/* logo text */
+/* site logo */
 .logo {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   letter-spacing: 0.16em;
   font-weight: 700;
   cursor: pointer;
+  color: var(--text);
 }
 
-/* navigation links */
 .main-nav {
   display: flex;
   gap: 1.8rem;
@@ -158,7 +180,6 @@ select {
   justify-content: flex-end;
 }
 
-/* nav link style */
 .main-nav a {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -168,18 +189,16 @@ select {
   transition: color 0.2s ease;
 }
 
-/* active nav link */
 .main-nav a:hover,
 .main-nav a.active-link {
   color: var(--text);
 }
 
-/* orange moving bar */
+/* orange scrolling ticker bar */
 .ticker-wrap {
   position: fixed;
   top: calc(var(--header-height) - 1px);
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   z-index: 90;
   overflow: hidden;
   background: var(--orange);
@@ -188,66 +207,59 @@ select {
   align-items: center;
 }
 
-/* text inside ticker */
+/* the text moves left continuously */
+/* JS doubles the content so moving left 50% creates a seamless loop */
 .ticker-track {
   display: flex;
   align-items: center;
   gap: 2.4rem;
   white-space: nowrap;
-  animation: tickerScroll 28s linear infinite;
+  animation: tickerScroll 32s linear infinite;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
+  will-change: transform;
 }
 
-/* small separator in ticker */
 .ticker-track .dot-sep {
   font-size: 0.5rem;
   opacity: 0.7;
 }
 
-/* ticker movement */
 @keyframes tickerScroll {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-/* shared inside page body */
+/* inner page body uses the theme background */
 .inner-page-body {
   background: var(--page-bg);
   color: var(--page-text);
 }
 
-/* main page wrapper */
+/* main content area on inner pages */
 .inner-page {
   padding: calc(var(--header-height) + var(--ticker-height) + 2rem) 2rem 5rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* page header layout */
 .page-hero,
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: flex-end;
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-/* smaller page header */
 .compact-hero {
   padding-top: 1rem;
 }
 
-/* small orange label */
+/* small orange uppercase label */
 .section-label {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -257,7 +269,6 @@ select {
   margin-bottom: 1rem;
 }
 
-/* big page titles */
 .page-hero h1,
 .dashboard-header h1,
 .item-details h1,
@@ -269,7 +280,6 @@ select {
   margin-bottom: 1.2rem;
 }
 
-/* normal intro text */
 .page-intro,
 .item-description,
 .auth-switch,
@@ -282,7 +292,7 @@ select {
   line-height: 1.8;
 }
 
-/* orange action button */
+/* orange outlined action button */
 .action-btn {
   display: inline-block;
   margin-top: 2rem;
@@ -295,17 +305,17 @@ select {
   color: var(--orange);
   transition: all 0.2s ease;
   cursor: pointer;
+  background: none;
 }
 
-/* orange button hover */
 .action-btn:hover {
   background: var(--orange);
   color: #111;
   transform: translate(-3px, -3px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: 3px 3px 0 rgba(255,255,255,0.3);
 }
 
-/* outline button */
+/* secondary outlined button — uses theme variables so it always contrasts */
 .ghost-btn {
   display: inline-block;
   margin-top: 2rem;
@@ -314,19 +324,20 @@ select {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 1rem 1.6rem;
-  border: 1px solid var(--ink);
-  color: var(--ink);
+  border: 1px solid var(--btn-border);
+  color: var(--btn-text);
+  background: none;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
-/* outline button hover */
 .ghost-btn:hover {
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--btn-hover-bg);
+  color: var(--btn-hover-text);
+  border-color: var(--btn-hover-bg);
 }
 
-/* shared card look */
+/* card surface shared by many elements */
 .filter-panel,
 .catalog-card,
 .auth-card,
@@ -335,17 +346,16 @@ select {
 .cart-item-row,
 .cart-summary,
 .mini-card {
-  background: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(23, 23, 23, 0.1);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
 }
 
-/* shared form layout */
+/* form fields stack vertically */
 .auth-form {
   display: grid;
   gap: 1rem;
 }
 
-/* form labels */
 .auth-form label,
 .filter-field label {
   display: flex;
@@ -355,90 +365,115 @@ select {
   font-size: 0.74rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--page-text);
 }
 
-/* form inputs */
+/* inputs use theme variables so they are always readable */
 .auth-form input,
+.auth-form textarea,
 .filter-field input,
 .filter-field select {
-  border: 1px solid rgba(23, 23, 23, 0.16);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--page-text);
   padding: 0.95rem 1rem;
   border-radius: 12px;
 }
 
-/* main form button */
+.auth-form input::placeholder,
+.filter-field input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
 .auth-btn {
   margin-top: 0;
 }
 
-/* two column form */
+/* two column form layout */
 .two-column-form {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* full width button in forms */
 .two-column-form .auth-btn {
   grid-column: 1 / -1;
 }
 
-/* dark theme cards */
-body.theme-dark .filter-field input,
-body.theme-dark .filter-field select,
-body.theme-dark .auth-form input,
-body.theme-dark .auth-card,
-body.theme-dark .filter-panel,
-body.theme-dark .catalog-card,
-body.theme-dark .dashboard-panel,
-body.theme-dark .stat-card,
-body.theme-dark .cart-item-row,
-body.theme-dark .cart-summary,
-body.theme-dark .mini-card {
-  background: #17191f;
-  border-color: #2f333d;
+/* the navigate link back to collection */
+.back-link {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  color: var(--page-text);
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
 }
 
-/* dark theme text */
-body.theme-dark .page-hero h1,
-body.theme-dark .dashboard-header h1,
-body.theme-dark .filter-field label,
-body.theme-dark .catalog-copy h3 a,
-body.theme-dark .catalog-copy p,
-body.theme-dark .catalog-meta,
-body.theme-dark .detail-list span,
-body.theme-dark .detail-list strong,
-body.theme-dark .item-description,
-body.theme-dark .rating-box p,
-body.theme-dark .auth-card,
-body.theme-dark .auth-card h1,
-body.theme-dark .auth-switch,
-body.theme-dark .feature-list li,
-body.theme-dark .stat-card,
-body.theme-dark .dashboard-panel,
-body.theme-dark .dashboard-list-item,
-body.theme-dark .cart-item-row,
-body.theme-dark .cart-summary,
-body.theme-dark .summary-row,
-body.theme-dark .catalog-top-bar,
-body.theme-dark .mini-card,
-body.theme-dark .mini-card h3,
-body.theme-dark .mini-card p {
-  color: #f3efe9;
+.back-link:hover {
+  opacity: 1;
 }
 
-/* dark theme outline button */
-body.theme-dark .ghost-btn {
-  color: #f3efe9;
-  border-color: #f3efe9;
+/* the link to switch between login and register */
+.auth-switch-link {
+  color: var(--orange);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
 }
 
-/* dark theme outline button hover */
-body.theme-dark .ghost-btn:hover {
-  background: #f3efe9;
-  color: #111319;
+.auth-switch-link:hover {
+  opacity: 0.75;
 }
 
-/* tablet layout fixes */
+/* remove extra top margin when a button is inside a panel */
+.filter-panel .action-btn,
+.filter-panel .ghost-btn,
+.dashboard-header .action-btn,
+.dashboard-header .ghost-btn,
+.row-actions .ghost-btn,
+.row-actions .action-btn,
+.modal-form .action-btn,
+.item-actions .action-btn,
+.item-actions .ghost-btn,
+.auth-card .action-btn,
+.auth-card .ghost-btn,
+.cart-summary .action-btn,
+.discount-section .action-btn,
+.discount-section .ghost-btn,
+.filter-buttons .action-btn,
+.filter-buttons .ghost-btn {
+  margin-top: 0;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.filter-buttons .action-btn,
+.filter-buttons .ghost-btn {
+  padding: 0.95rem 1.2rem;
+}
+
+/* buttons inside the always-dark header always use light colors */
+.site-header .ghost-btn,
+.site-header .action-btn {
+  color: var(--text);
+  border-color: var(--text);
+  margin-top: 0;
+}
+
+.site-header .ghost-btn:hover,
+.site-header .action-btn:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* tablet */
 @media (max-width: 1100px) {
   .page-hero,
   .dashboard-header,
@@ -448,17 +483,14 @@ body.theme-dark .ghost-btn:hover {
   .dashboard-panels,
   .stats-grid,
   .filter-grid,
-  .catalog-grid,
   .mini-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* phone layout fixes */
+/* phone */
 @media (max-width: 768px) {
-  :root {
-    --header-height: 72px;
-  }
+  :root { --header-height: 72px; }
 
   .site-header,
   .inner-page {
@@ -482,96 +514,4 @@ body.theme-dark .ghost-btn:hover {
   .two-column-form {
     grid-template-columns: 1fr;
   }
-}
-/* ghost-btn on light inner pages uses dark ink */
-.inner-page-body .ghost-btn {
-  color: var(--ink);
-  border-color: var(--ink);
-}
-.inner-page-body .ghost-btn:hover {
-  background: var(--ink);
-  color: var(--cream);
-}
-
-/* action-btn always orange — readable on any background */
-.action-btn {
-  color: var(--orange);
-  border-color: var(--orange);
-  background: transparent;
-}
-
-/* strip big top margin from buttons inside panels and forms */
-.item-actions .action-btn,
-.item-actions .ghost-btn,
-.auth-card .action-btn,
-.auth-card .ghost-btn,
-.cart-summary .action-btn,
-.filter-panel .action-btn,
-.filter-panel .ghost-btn,
-.auth-btn {
-  margin-top: 0;
-}
-
-/* dark theme buttons */
-body.theme-dark .action-btn {
-  color: var(--orange);
-  border-color: var(--orange);
-  background: transparent;
-}
-body.theme-dark .action-btn:hover {
-  background: var(--orange);
-  color: #fff;
-}
-body.theme-dark .inner-page-body .ghost-btn,
-body.theme-dark .ghost-btn {
-  color: #f3efe9;
-  border-color: #f3efe9;
-}
-body.theme-dark .inner-page-body .ghost-btn:hover,
-body.theme-dark .ghost-btn:hover {
-  background: #f3efe9;
-  color: #111319;
-}
-
-/* dark theme inputs */
-body.theme-dark .filter-field input,
-body.theme-dark .filter-field select,
-body.theme-dark .auth-form input,
-body.theme-dark .auth-form select {
-  background: #1e2028;
-  border-color: #3a3e4a;
-  color: #f3efe9;
-}
-
-/* dark theme text that was staying black */
-body.theme-dark h1,
-body.theme-dark h2,
-body.theme-dark h3,
-body.theme-dark p,
-body.theme-dark label,
-body.theme-dark .catalog-top-bar,
-body.theme-dark .page-intro,
-body.theme-dark .catalog-copy p,
-body.theme-dark .catalog-copy h3,
-body.theme-dark .catalog-copy h3 a,
-body.theme-dark .catalog-meta,
-body.theme-dark .item-description,
-body.theme-dark .cart-copy p,
-body.theme-dark .cart-copy h3,
-body.theme-dark .summary-row,
-body.theme-dark .summary-row span,
-body.theme-dark .stat-card span,
-body.theme-dark .stat-card strong,
-body.theme-dark .dashboard-list-item,
-body.theme-dark .detail-list span,
-body.theme-dark .detail-list strong,
-body.theme-dark .auth-switch,
-body.theme-dark .feature-list li,
-body.theme-dark .rating-box p {
-  color: #f3efe9;
-}
-
-/* ticker slightly slower */
-.ticker-track {
-  animation-duration: 40s;
 }

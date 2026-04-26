@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# extra info attached to every user account
+# extra information attached to every user account
+# role is either buyer or seller
 class Profile(models.Model):
     ROLE_CHOICES = [
         ('buyer',  'Buyer'),
@@ -12,10 +13,10 @@ class Profile(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='buyer')
 
     def __str__(self):
-        return f'{self.user.username} - {self.role}'
+        return self.user.username + ' as ' + self.role
 
 
-# product categories
+# product category like furniture or electronics
 class Category(models.Model):
     name        = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -27,7 +28,7 @@ class Category(models.Model):
         return self.name
 
 
-# a product listing created by a seller or admin
+# a product that is listed for sale on the site
 class Product(models.Model):
     owner       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     category    = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -42,7 +43,7 @@ class Product(models.Model):
         return self.name
 
 
-# a review left by a logged-in user on a product
+# a star rating and comment left by a logged in user on a product
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -50,29 +51,30 @@ class Review(models.Model):
     comment = models.TextField(blank=True)
 
     def __str__(self):
-        return f'{self.user.username} reviewed {self.product.name}'
+        return self.user.username + ' reviewed ' + self.product.name
 
 
-# one item sitting in a user's cart
+# one item sitting in a users cart before checkout
 class CartItem(models.Model):
     user     = models.ForeignKey(User, on_delete=models.CASCADE)
     product  = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f'{self.product.name} x {self.quantity}'
+        return self.product.name + ' x' + str(self.quantity)
 
 
-# a product saved to a user's wishlist
+# a product saved to a users wishlist
 class WishlistItem(models.Model):
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user.username} saved {self.product.name}'
+        return self.user.username + ' saved ' + self.product.name
 
 
-# a completed simulated purchase — one row per cart item at checkout
+# a completed simulated purchase saved after checkout
+# one row is created for each cart item at the time of checkout
 class Order(models.Model):
     buyer       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     product     = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='orders')
@@ -81,11 +83,11 @@ class Order(models.Model):
     created_at  = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.buyer.username} bought {self.product.name}'
+        return self.buyer.username + ' bought ' + self.product.name
 
 
 # tracks which discount codes a user has already redeemed
-# this stops a code from being used more than once per account
+# the unique together rule stops the same code being used twice by one account
 class UsedCode(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     code = models.CharField(max_length=50)
@@ -94,4 +96,4 @@ class UsedCode(models.Model):
         unique_together = ('user', 'code')
 
     def __str__(self):
-        return f'{self.user.username} used {self.code}'
+        return self.user.username + ' used ' + self.code

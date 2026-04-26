@@ -4,30 +4,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | OUTOFSTOCK™</title>
+  <title>Login | OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
-  <link rel="stylesheet" href="{% static 'store/css/login.css' %}" />
+  <link rel="stylesheet" href="{% static 'store/css/login.css' %}">
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-glow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
       <a href="{% url 'login' %}" class="active-link">Login</a>
-      <a href="{% url 'dashboard' %}">Dashboard</a>
-      <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
+      <a href="{% url 'register' %}">Register</a>
     </nav>
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>USER LOGIN</span><span class="dot-sep">◆</span>
-      <span>REGISTER NEW ACCOUNT</span><span class="dot-sep">◆</span>
-      <span>ROLE-BASED ACCESS NEXT</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      <span>MEMBER ACCESS</span><span class="dot-sep">&#9670;</span>
+      <span>ROLE BASED SECURITY</span><span class="dot-sep">&#9670;</span>
+      <span>REGISTER FOR AN ACCOUNT</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
 
@@ -37,38 +36,40 @@
         <p class="section-label">MEMBER ACCESS</p>
         <h1>Login</h1>
 
-        {# new: show error if login failed #}
         {% if error %}
-          <p style="color:red;">{{ error }}</p>
+          <p style="color:#e02020;margin-top:0.5rem;">{{ error }}</p>
         {% endif %}
 
-        {# new: changed to Django POST form with csrf_token and username field #}
-        <form class="auth-form" method="post" action="{% url 'login' %}">
+        <form class="auth-form" method="POST" action="{% url 'login' %}">
           {% csrf_token %}
           <label>Username
-            <input name="username" type="text" placeholder="archive_user" />
+            <input name="username" type="text" placeholder="your username" />
           </label>
           <label>Password
-            <input name="password" type="password" placeholder="••••••••" />
+            <input name="password" type="password" placeholder="your password" />
           </label>
           <button type="submit" class="action-btn auth-btn">Sign In</button>
         </form>
-        <p class="auth-switch">No account yet? <a href="{% url 'register' %}">Create one here</a>.</p>
+
+        <p class="auth-switch" style="margin-top:1rem;">
+          No account? <a href="{% url 'register' %}" class="auth-switch-link">Create one here</a>
+        </p>
       </div>
 
       <div class="auth-card secondary-card">
         <p class="section-label">WHY LOGIN</p>
         <ul class="feature-list">
-          <li>Save wishlist items</li>
-          <li>Track recent views</li>
-          <li>Rate archive objects</li>
-          <li>Use the simulated cart</li>
+          <li>Save items to your wishlist</li>
+          <li>Add reviews and ratings</li>
+          <li>Use the shopping cart</li>
+          <li>Access your personal dashboard</li>
+          <li>Sellers can list their own products</li>
         </ul>
       </div>
     </section>
   </main>
 
-  <script src="{% static 'store/js/script.js' %}"></script>
+  <script src="{% static 'store/js/shared.js' %}"></script>
   <script src="{% static 'store/js/login.js' %}"></script>
 </body>
 </html>

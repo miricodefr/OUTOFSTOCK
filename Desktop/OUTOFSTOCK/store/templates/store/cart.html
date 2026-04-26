@@ -4,16 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cart | OUTOFSTOCK™</title>
+  <title>Cart | OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
-  <link rel="stylesheet" href="{% static 'store/css/cart.css' %}" />
+  <link rel="stylesheet" href="{% static 'store/css/cart.css' %}">
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-glow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
@@ -28,10 +28,11 @@
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>SIMULATED CHECKOUT</span><span class="dot-sep">◆</span>
-      <span>NO REAL PAYMENTS</span><span class="dot-sep">◆</span>
-      <span>DISCOUNT CODES AVAILABLE</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      <span>SIMULATED CHECKOUT</span><span class="dot-sep">&#9670;</span>
+      <span>NO REAL PAYMENTS</span><span class="dot-sep">&#9670;</span>
+      <span>DISCOUNT CODES AVAILABLE</span><span class="dot-sep">&#9670;</span>
+      <span>TRY CODE 10OFF</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
 
@@ -43,69 +44,73 @@
       {% if user.is_authenticated %}
         {% for item in cart_items %}
         <article class="cart-item-row">
-          <div class="cart-thumb placeholder-one"></div>
+          <div class="cart-thumb {% if item.product.image %}cart-thumb-img{% else %}placeholder-one{% endif %}">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" />
+            {% endif %}
+          </div>
           <div class="cart-copy">
             <h3>{{ item.product.name }}</h3>
-            <p>{{ item.product.category.name }} / Qty: {{ item.quantity }}</p>
+            <p>{{ item.product.category.name }}  Qty {{ item.quantity }}</p>
           </div>
-          <strong>€{{ item.product.price }}</strong>
-          <a href="{% url 'remove_from_cart' item.id %}"
-             style="display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1rem;border:1px solid var(--ink);color:var(--ink);border-radius:8px;cursor:pointer;transition:all 0.2s;text-decoration:none;margin-left:0.5rem;">
-            Remove
-          </a>
+          <strong>&#8364;{{ item.product.price }}</strong>
+          <a href="{% url 'remove_from_cart' item.id %}" class="cart-remove-btn" data-remove-link>Remove</a>
         </article>
         {% empty %}
-          <p>Your cart is empty. <a href="{% url 'products' %}">Browse the collection.</a></p>
+          <p style="margin-top:1rem;opacity:0.6;">Your cart is empty. <a href="{% url 'products' %}" style="color:var(--orange);">Browse the collection</a></p>
         {% endfor %}
       {% else %}
-        <p>Please <a href="{% url 'login' %}">log in</a> to use your cart.</p>
+        <p>Please <a href="{% url 'login' %}" style="color:var(--orange);">log in</a> to use your cart.</p>
       {% endif %}
     </div>
 
     <aside class="cart-summary">
       <p class="section-label">SUMMARY</p>
+
       <div class="summary-row"><span>Items</span><strong>{{ cart_items|length }}</strong></div>
-      <div class="summary-row"><span>Subtotal</span><strong>€{{ subtotal }}</strong></div>
+      <div class="summary-row"><span>Subtotal</span><strong>&#8364;{{ subtotal }}</strong></div>
+
       {% if discount_pct %}
-        <div class="summary-row" style="color:var(--orange);">
-          <span>Discount ({{ discount_pct }}% off)</span>
-          <strong>-€{{ discount_amount }}</strong>
-        </div>
-      {% endif %}
-      <div class="summary-row"><span>Shipping</span><strong>€0</strong></div>
-      <div class="summary-row total-row">
-        <span>Total</span>
-        <strong>€{% if discount_pct %}{{ final_total }}{% else %}{{ total }}{% endif %}</strong>
+      <div class="summary-row discount-row">
+        <span>Discount {{ discount_pct }} percent off</span>
+        <strong>minus &#8364;{{ discount_amt }}</strong>
       </div>
+      {% endif %}
+
+      <div class="summary-row"><span>Shipping</span><strong>Free</strong></div>
+      <div class="summary-row total-row"><span>Total</span><strong>&#8364;{{ total }}</strong></div>
 
       {% if user.is_authenticated %}
-      <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(23,23,23,0.1);">
-        <p style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:0.6rem;">Discount code</p>
+      <div class="discount-section">
+        <p>Discount code</p>
+
         {% if applied_code %}
-          <p style="font-family:var(--font-mono);font-size:0.82rem;color:var(--orange);">
-            {{ applied_code }} applied ({{ discount_pct }}% off)
-            <a href="{% url 'remove_code' %}" style="margin-left:0.75rem;color:var(--orange);">&times; Remove</a>
-          </p>
+          <div class="code-tag">
+            {{ applied_code }}  {{ discount_pct }} percent off
+            <a href="{% url 'remove_code' %}" title="Remove code">&times;</a>
+          </div>
         {% else %}
           <form method="POST" action="{% url 'apply_code' %}">
             {% csrf_token %}
-            <div style="display:flex;gap:0.5rem;margin-top:0.4rem;">
-              <input name="code" type="text" placeholder="ENTER CODE"
-                     style="flex:1;border:1px solid rgba(23,23,23,0.2);background:rgba(255,255,255,0.7);padding:0.6rem 0.8rem;border-radius:8px;font-family:var(--font-mono);font-size:0.78rem;text-transform:uppercase;">
-              <button type="submit" class="action-btn" style="padding:0.6rem 1rem;margin-top:0;">Apply</button>
+            <div class="discount-row-input">
+              <input name="code" type="text" placeholder="ENTER CODE" />
+              <button type="submit" class="discount-apply-btn">Apply</button>
             </div>
           </form>
           {% if request.session.code_error %}
-            <p style="color:red;font-family:var(--font-mono);font-size:0.78rem;margin-top:0.4rem;">{{ request.session.code_error }}</p>
+            <p class="code-msg error">{{ request.session.code_error }}</p>
+          {% endif %}
+          {% if request.session.code_success %}
+            <p class="code-msg success">{{ request.session.code_success }}</p>
           {% endif %}
         {% endif %}
       </div>
       {% endif %}
 
       {% if user.is_authenticated and cart_items %}
-        <form method="POST" action="{% url 'checkout' %}">
+        <form method="POST" action="{% url 'checkout' %}" style="margin-top:1.25rem;">
           {% csrf_token %}
-          <button type="submit" class="action-btn" style="width:100%;margin-top:1rem;">Simulate Checkout</button>
+          <button type="submit" class="action-btn" style="width:100%;text-align:center;">Simulate Checkout</button>
         </form>
       {% endif %}
     </aside>

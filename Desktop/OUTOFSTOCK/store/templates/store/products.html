@@ -4,16 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Collection | OUTOFSTOCK™</title>
+  <title>Collection | OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
-  <link rel="stylesheet" href="{% static 'store/css/collection.css' %}" />
+  <link rel="stylesheet" href="{% static 'store/css/collection.css' %}">
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-glow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}" class="active-link">Collection</a>
@@ -28,10 +28,13 @@
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>FILTER BY CATEGORY</span><span class="dot-sep">◆</span>
-      <span>SEARCH THE ARCHIVE</span><span class="dot-sep">◆</span>
-      <span>UNFINISHED OBJECTS ONLY</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      <span>FILTER BY CATEGORY</span><span class="dot-sep">&#9670;</span>
+      <span>SEARCH THE ARCHIVE</span><span class="dot-sep">&#9670;</span>
+      <span>UNFINISHED OBJECTS ONLY</span><span class="dot-sep">&#9670;</span>
+      <span>BROWSE THE COLLECTION</span><span class="dot-sep">&#9670;</span>
+      <span>NO RESTOCKS</span><span class="dot-sep">&#9670;</span>
+      <span>STRANGE INVENTORY</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
 
@@ -40,17 +43,18 @@
       <div>
         <p class="section-label">CATALOGUE</p>
         <h1>Collection Archive</h1>
-        <p class="page-intro">Search by name or brand, then narrow by category and price.</p>
+        <p class="page-intro">Search by name or brand then narrow by category and price.</p>
       </div>
     </section>
 
     <section class="filter-panel">
       <form class="filter-grid" method="GET" action="{% url 'products' %}">
+
         <input type="hidden" name="sort" value="{{ sort_by }}" />
 
         <div class="filter-field">
           <label for="search">Search</label>
-          <input id="search" name="q" type="text" placeholder="Name or brand..." value="{{ query }}" />
+          <input id="search" name="q" type="text" placeholder="Name or brand..." value="{{ query }}" data-search />
         </div>
 
         <div class="filter-field">
@@ -58,9 +62,7 @@
           <select id="category" name="category">
             <option value="">All categories</option>
             {% for cat in categories %}
-              <option value="{{ cat.id }}" {% if selected_cat == cat.id|stringformat:"s" %}selected{% endif %}>
-                {{ cat.name }}
-              </option>
+              <option value="{{ cat.id }}" {% if selected_cat == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
             {% endfor %}
           </select>
         </div>
@@ -76,48 +78,42 @@
         </div>
 
         <div class="filter-field">
-          <label for="price">Max price (€)</label>
+          <label for="price">Max price</label>
           <select id="price" name="max_price">
             <option value="">No limit</option>
-            <option value="25"  {% if selected_price == "25"  %}selected{% endif %}>€25</option>
-            <option value="50"  {% if selected_price == "50"  %}selected{% endif %}>€50</option>
-            <option value="100" {% if selected_price == "100" %}selected{% endif %}>€100</option>
-            <option value="250" {% if selected_price == "250" %}selected{% endif %}>€250</option>
+            <option value="25"  {% if selected_price == "25"  %}selected{% endif %}>25 euro</option>
+            <option value="50"  {% if selected_price == "50"  %}selected{% endif %}>50 euro</option>
+            <option value="100" {% if selected_price == "100" %}selected{% endif %}>100 euro</option>
+            <option value="250" {% if selected_price == "250" %}selected{% endif %}>250 euro</option>
           </select>
         </div>
 
-        <div class="filter-field" style="display:flex;align-items:flex-end;gap:0.5rem;">
-          <button type="submit" class="action-btn" style="margin-top:0;padding:0.95rem 1.4rem;">Search</button>
-          <a href="{% url 'products' %}" class="ghost-btn" style="margin-top:0;padding:0.95rem 1.4rem;">Clear</a>
+        <div class="filter-buttons" style="grid-column: 1 / -1;">
+          <button type="submit" class="action-btn">Search</button>
+          <a href="{% url 'products' %}" class="ghost-btn">Clear</a>
         </div>
+
       </form>
     </section>
 
     <section class="catalog-grid-section">
       <div class="catalog-top-bar">
         <p>{{ result_count }} item{{ result_count|pluralize }} found</p>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=newest"
-             style="padding:0.2rem 0.7rem;border:1px solid currentColor;border-radius:999px;font-size:0.65rem;letter-spacing:0.08em;{% if sort_by == 'newest' %}color:var(--orange);border-color:var(--orange);{% endif %}">Newest</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=oldest"
-             style="padding:0.2rem 0.7rem;border:1px solid currentColor;border-radius:999px;font-size:0.65rem;letter-spacing:0.08em;{% if sort_by == 'oldest' %}color:var(--orange);border-color:var(--orange);{% endif %}">Oldest</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_asc"
-             style="padding:0.2rem 0.7rem;border:1px solid currentColor;border-radius:999px;font-size:0.65rem;letter-spacing:0.08em;{% if sort_by == 'price_asc' %}color:var(--orange);border-color:var(--orange);{% endif %}">Price ↑</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_desc"
-             style="padding:0.2rem 0.7rem;border:1px solid currentColor;border-radius:999px;font-size:0.65rem;letter-spacing:0.08em;{% if sort_by == 'price_desc' %}color:var(--orange);border-color:var(--orange);{% endif %}">Price ↓</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=az"
-             style="padding:0.2rem 0.7rem;border:1px solid currentColor;border-radius:999px;font-size:0.65rem;letter-spacing:0.08em;{% if sort_by == 'az' %}color:var(--orange);border-color:var(--orange);{% endif %}">A–Z</a>
+        <div class="sort-options">
+          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=newest"   class="sort-pill {% if sort_by == 'newest'     %}is-active{% endif %}">Newest</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=oldest"   class="sort-pill {% if sort_by == 'oldest'     %}is-active{% endif %}">Oldest</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_asc" class="sort-pill {% if sort_by == 'price_asc'  %}is-active{% endif %}">Price low</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_desc" class="sort-pill {% if sort_by == 'price_desc' %}is-active{% endif %}">Price high</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=az"        class="sort-pill {% if sort_by == 'az'         %}is-active{% endif %}">A to Z</a>
         </div>
       </div>
 
       <div class="catalog-grid" data-product-grid>
         {% for product in products %}
         <article class="catalog-card">
-          <a href="{% url 'product_detail' product.id %}" class="catalog-image"
-             style="display:block;min-height:230px;overflow:hidden;position:relative;background:rgba(23,23,23,0.06);">
+          <a href="{% url 'product_detail' product.id %}" class="catalog-image">
             {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                   style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" />
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" />
             {% else %}
               <span>{{ product.name }}</span>
             {% endif %}
@@ -125,17 +121,20 @@
           <div class="catalog-copy">
             <p class="catalog-meta">{{ product.category.name }}{% if product.brand %} / {{ product.brand }}{% endif %}</p>
             <h3><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h3>
-            <p>{{ product.description|truncatechars:100 }}</p>
+            <p>{{ product.description|truncatechars:90 }}</p>
             <div class="catalog-row">
-              <span>€{{ product.price }}</span>
-              {% if product.owner %}<span>{{ product.owner.username }}</span>{% endif %}
+              <span>&#8364;{{ product.price }}</span>
+              {% if product.stock > 0 %}
+                <span class="stock-in">In stock</span>
+              {% else %}
+                <span class="stock-out">Out of stock</span>
+              {% endif %}
             </div>
+            <a href="{% url 'product_detail' product.id %}" class="catalog-view-btn">View Item</a>
           </div>
         </article>
         {% empty %}
-          <p style="grid-column:1/-1;padding:2rem 0;">
-            Nothing matches your search. <a href="{% url 'products' %}">Clear filters.</a>
-          </p>
+          <p class="empty-message">Nothing matches your search. <a href="{% url 'products' %}">Clear filters</a></p>
         {% endfor %}
       </div>
     </section>

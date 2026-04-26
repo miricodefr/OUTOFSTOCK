@@ -1,50 +1,72 @@
-/* show user on dashboard */
-function showUser() {
-  const savedUser = localStorage.getItem(userKey);
-  const nameBox = document.querySelector("[data-user-name]");
-  const emailBox = document.querySelector("[data-user-email]");
+/* dashboard page only script */
 
-  if (!nameBox || !emailBox) return;
 
-  if (!savedUser) {
-    nameBox.textContent = "Guest";
-    emailBox.textContent = "Not logged in";
-    return;
-  }
-
-  if (savedUser.includes("{")) {
-    const user = JSON.parse(savedUser);
-
-    nameBox.textContent = user.name;
-    emailBox.textContent = user.email;
-  } else {
-    nameBox.textContent = "User";
-    emailBox.textContent = savedUser;
-  }
+/* show the new listing modal */
+function openModal() {
+  var overlay = document.querySelector(".modal-overlay");
+  if (overlay) overlay.classList.add("is-open");
 }
 
-/* show dashboard numbers */
-function showStats() {
-  const countBox = document.querySelector("[data-dashboard-cart-count]");
-  const totalBox = document.querySelector("[data-dashboard-cart-total]");
 
-  if (countBox) countBox.textContent = getCart().length;
-  if (totalBox) totalBox.textContent = showPrice(getCartTotal());
+/* hide the new listing modal */
+function closeModal() {
+  var overlay = document.querySelector(".modal-overlay");
+  if (overlay) overlay.classList.remove("is-open");
 }
 
-/* dashboard setup */
+
+/* show or hide the edit form for a specific listing row */
+function toggleEdit(productId) {
+  var form = document.querySelector("[data-edit-form=" + productId + "]");
+  if (!form) return;
+  form.classList.toggle("is-open");
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
-  const logout = document.querySelector("[data-logout]");
 
-  showUser();
-  showStats();
+  /* wire up the new listing button */
+  var openBtn = document.querySelector("[data-open-modal]");
+  if (openBtn) openBtn.addEventListener("click", openModal);
 
-  if (logout) {
-    logout.addEventListener("click", function () {
-      localStorage.removeItem(userKey);
+  /* wire up the close button inside the modal */
+  var closeBtn = document.querySelector(".modal-close");
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
-      alert("Logged out");
-      window.location.href = "login.html";
+  /* clicking the dark background behind the modal also closes it */
+  var overlay = document.querySelector(".modal-overlay");
+  if (overlay) {
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeModal();
     });
   }
+
+  /* wire up every edit button in the listings table */
+  var editBtns = document.querySelectorAll("[data-edit-btn]");
+  editBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      toggleEdit(btn.dataset.editBtn);
+    });
+  });
+
+  /* ask for confirmation before deleting a listing */
+  var deleteBtns = document.querySelectorAll("[data-delete-listing]");
+  deleteBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      if (!confirm("Delete this listing? This cannot be undone.")) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  /* ask for confirmation before deleting a user account */
+  var deleteUserBtns = document.querySelectorAll("[data-delete-user]");
+  deleteUserBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      if (!confirm("Delete this user account? This cannot be undone.")) {
+        e.preventDefault();
+      }
+    });
+  });
+
 });

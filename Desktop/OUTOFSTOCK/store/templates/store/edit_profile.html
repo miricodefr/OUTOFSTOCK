@@ -4,16 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Profile | OUTOFSTOCK™</title>
+  <title>Edit Profile | OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
   <link rel="stylesheet" href="{% static 'store/css/login.css' %}">
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-glow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
@@ -24,10 +24,10 @@
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>EDIT PROFILE</span><span class="dot-sep">◆</span>
-      <span>UPDATE YOUR DETAILS</span><span class="dot-sep">◆</span>
-      <span>CHANGES SAVED INSTANTLY</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      <span>EDIT PROFILE</span><span class="dot-sep">&#9670;</span>
+      <span>UPDATE YOUR DETAILS</span><span class="dot-sep">&#9670;</span>
+      <span>CHANGES SAVED INSTANTLY</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
 
@@ -38,31 +38,27 @@
         <h1>Edit Profile</h1>
 
         {% if success %}
-          <p style="color:green;margin-top:0.5rem;">{{ success }}</p>
+          <p style="color:var(--green);margin-top:0.5rem;">{{ success }}</p>
         {% endif %}
         {% if error %}
-          <p style="color:red;margin-top:0.5rem;">{{ error }}</p>
+          <p style="color:#e02020;margin-top:0.5rem;">{{ error }}</p>
         {% endif %}
 
         <form class="auth-form" method="POST" action="{% url 'edit_profile' %}">
           {% csrf_token %}
           <label>Email
-            <input name="email" type="email"
-                   value="{{ user.email }}"
-                   placeholder="your@email.com" />
+            <input name="email" type="email" value="{{ user.email }}" placeholder="your@email.com" />
           </label>
-          <label>Username
-            <input type="text" value="{{ user.username }}" disabled
-                   style="opacity:0.4;cursor:not-allowed;" />
+          <label>Username (cannot be changed)
+            <input type="text" value="{{ user.username }}" disabled style="opacity:0.4;cursor:not-allowed;" />
           </label>
-          <label>New password
-            <input name="password" type="password"
-                   placeholder="Leave blank to keep current password" />
+          <label>New password (leave blank to keep current)
+            <input name="password" type="password" placeholder="at least 6 characters" />
           </label>
           <button type="submit" class="action-btn auth-btn">Save Changes</button>
         </form>
 
-        <p class="auth-switch"><a href="{% url 'dashboard' %}">← Back to dashboard</a></p>
+        <p class="auth-switch" style="margin-top:1rem;"><a href="{% url 'dashboard' %}">Back to dashboard</a></p>
       </div>
     </section>
   </main>

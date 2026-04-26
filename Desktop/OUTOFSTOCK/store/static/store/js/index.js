@@ -1,13 +1,18 @@
-/* move hero shape with mouse */
+/* home page only script */
+
+
+/* make the floating shape drift slightly when the mouse moves */
 document.addEventListener("DOMContentLoaded", function () {
-  const shape = document.querySelector(".floating-shape");
 
-  if (!shape) return;
+  var shape = document.querySelector(".floating-shape");
 
-  window.addEventListener("mousemove", function (event) {
-    const x = (event.clientX / window.innerWidth - 0.5) * 18;
-    const y = (event.clientY / window.innerHeight - 0.5) * 18;
+  if (shape) {
+    window.addEventListener("mousemove", function (e) {
+      /* figure out how far the mouse is from the center of the screen */
+      var x = (e.clientX / window.innerWidth  - 0.5) * 18;
+      var y = (e.clientY / window.innerHeight - 0.5) * 18;
+      shape.style.transform = "rotate(16deg) translate(" + x + "px, " + y + "px)";
+    });
+  }
 
-    shape.style.transform = "rotate(16deg) translate(" + x + "px, " + y + "px)";
-  });
 });

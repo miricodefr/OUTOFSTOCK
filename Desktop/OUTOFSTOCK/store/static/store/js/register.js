@@ -1,29 +1,36 @@
-/* register form check */
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.querySelector("[data-register-form]");
+/* register page only script */
 
+
+/* validate all fields before the form reaches Django */
+document.addEventListener("DOMContentLoaded", function () {
+
+  var form = document.querySelector(".auth-form");
   if (!form) return;
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
+  form.addEventListener("submit", function (e) {
+    var username = document.querySelector("[name='username']");
+    var email    = document.querySelector("[name='email']");
+    var password = document.querySelector("[name='password']");
 
-    const name = document.querySelector("[data-register-name]").value;
-    const email = document.querySelector("[data-register-email]").value;
-    const password = document.querySelector("[data-register-password]").value;
-
-    if (name === "" || email === "" || password === "") {
-      alert("Please fill in all fields");
+    /* stop if any field is empty */
+    if (!username.value.trim() || !email.value.trim() || !password.value.trim()) {
+      e.preventDefault();
+      alert("All fields are required.");
       return;
     }
 
-    const user = {
-      name: name,
-      email: email,
-    };
+    /* very basic email check just looks for an @ sign */
+    if (!email.value.includes("@")) {
+      e.preventDefault();
+      alert("Please enter a valid email address.");
+      return;
+    }
 
-    localStorage.setItem(userKey, JSON.stringify(user));
-
-    alert("Account created");
-    window.location.href = "dashboard.html";
+    /* password must be at least 6 characters long */
+    if (password.value.length < 6) {
+      e.preventDefault();
+      alert("Password must be at least 6 characters long.");
+    }
   });
+
 });

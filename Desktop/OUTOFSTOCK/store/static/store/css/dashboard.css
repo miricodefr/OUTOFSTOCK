@@ -1,4 +1,4 @@
-/* dashboard stats grid */
+/* stats grid at the top of the dashboard */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -6,13 +6,11 @@
   margin: 2rem 0;
 }
 
-/* stat card */
 .stat-card {
   border-radius: 18px;
   padding: 1.4rem;
 }
 
-/* stat label */
 .stat-card span {
   display: block;
   font-family: var(--font-mono);
@@ -20,41 +18,244 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.8rem;
+  color: var(--page-text);
+  opacity: 0.65;
 }
 
-/* stat number */
 .stat-card strong {
   font-size: 2rem;
+  color: var(--page-text);
 }
 
-/* dashboard panels */
+/* two column panels for cart and wishlist */
 .dashboard-panels {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 }
 
-/* dashboard panel card */
 .dashboard-panel {
   border-radius: 18px;
   padding: 1.4rem;
 }
 
-/* panel title spacing */
 .dashboard-panel h2 {
   margin-bottom: 1rem;
+  color: var(--page-text);
 }
 
-/* dashboard list item */
+/* each row in the cart or wishlist panel */
 .dashboard-list-item {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 0;
-  border-top: 1px solid rgba(23, 23, 23, 0.1);
+  border-top: 1px solid var(--divider);
+  color: var(--page-text);
 }
 
-/* first item has no line */
 .dashboard-list-item:first-of-type {
   border-top: none;
+}
+
+/* analytics table used for listings and orders */
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-top: 1rem;
+}
+
+.analytics-table th {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--divider);
+  color: var(--page-text);
+  opacity: 0.6;
+}
+
+.analytics-table td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: middle;
+  color: var(--page-text);
+}
+
+.analytics-table tr:last-child td {
+  border-bottom: none;
+}
+
+.analytics-table a {
+  color: var(--orange);
+}
+
+.analytics-table a:hover {
+  text-decoration: underline;
+}
+
+/* edit and delete buttons next to each listing row */
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* create listing modal overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.is-open {
+  display: flex;
+}
+
+/* the modal box uses the theme card color */
+.modal-box {
+  background: var(--page-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* modal close button */
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: var(--page-text);
+  opacity: 0.45;
+  line-height: 1;
+  padding: 0;
+}
+
+.modal-close:hover {
+  opacity: 1;
+}
+
+/* the heading inside the modal */
+.modal-box h2 {
+  color: var(--page-text);
+  margin-top: 0.5rem;
+}
+
+/* form fields inside the modal */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--page-text);
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--page-text);
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font: inherit;
+}
+
+/* two column row inside the modal */
+.modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* edit form that slides open under a table row */
+.edit-form {
+  display: none;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+
+.edit-form.is-open {
+  display: block;
+}
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* fields inside the edit form */
+.edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--page-text);
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea {
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--page-text);
+  padding: 0.7rem 0.85rem;
+  border-radius: 8px;
+  font: inherit;
+}
+
+/* tablet: collapse stats grid */
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dashboard-panels {
+    grid-template-columns: 1fr;
+  }
+  .modal-row {
+    grid-template-columns: 1fr;
+  }
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* phone: single column */
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }

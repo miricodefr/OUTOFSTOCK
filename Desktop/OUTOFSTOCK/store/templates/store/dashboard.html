@@ -1,90 +1,356 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | OUTOFSTOCK™</title>
+  <title>Dashboard | OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
-  <link rel="stylesheet" href="{% static 'store/css/dashboard.css' %}" />
+  <link rel="stylesheet" href="{% static 'store/css/dashboard.css' %}">
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-glow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
-      {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>  {# new #}
-      {% else %}
-        <a href="{% url 'login' %}">Login</a>
-      {% endif %}
+      <a href="{% url 'logout' %}">Logout</a>
       <a href="{% url 'dashboard' %}" class="active-link">Dashboard</a>
-      <a href="{% url 'cart' %}">Cart (<span data-cart-count>{{ cart_count }}</span>)</a>  {# new: real count #}
+      <a href="{% url 'cart' %}">Cart ({{ cart_count }})</a>
     </nav>
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>RECENT VIEWS</span><span class="dot-sep">◆</span>
-      <span>WISHLIST</span><span class="dot-sep">◆</span>
-      <span>RATINGS HISTORY</span><span class="dot-sep">◆</span>
-      <span>PROFILE INFO</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      {% if role == 'admin' %}
+        <span>ADMIN PANEL</span><span class="dot-sep">&#9670;</span>
+        <span>ALL USERS</span><span class="dot-sep">&#9670;</span>
+        <span>FULL ANALYTICS</span><span class="dot-sep">&#9670;</span>
+      {% elif role == 'seller' %}
+        <span>SELLER DASHBOARD</span><span class="dot-sep">&#9670;</span>
+        <span>MY LISTINGS</span><span class="dot-sep">&#9670;</span>
+        <span>SALES ANALYTICS</span><span class="dot-sep">&#9670;</span>
+      {% else %}
+        <span>MY DASHBOARD</span><span class="dot-sep">&#9670;</span>
+        <span>WISHLIST AND CART</span><span class="dot-sep">&#9670;</span>
+        <span>REVIEW HISTORY</span><span class="dot-sep">&#9670;</span>
+      {% endif %}
     </div>
   </div>
 
   <main class="inner-page">
+
     <section class="dashboard-header">
       <div>
-        <p class="section-label">PERSONAL DASHBOARD</p>
-        {# new: show real username from Django session #}
-        <h1>Welcome back, <span data-user-name>{{ user.username|default:"Guest" }}</span>.</h1>
-        <p class="page-intro">This page connects to Django user data, cart, and purchases.</p>
-        <p data-user-email>{{ user.email|default:"Not logged in" }}</p>  {# new #}
+        <p class="section-label">
+          {% if role == 'admin' %}ADMIN DASHBOARD{% elif role == 'seller' %}SELLER DASHBOARD{% else %}PERSONAL DASHBOARD{% endif %}
+        </p>
+        <h1>Welcome back {{ user.username }}</h1>
+        <p>{{ user.email }}</p>
       </div>
-
-      <div>
-        <a href="{% url 'register' %}" class="ghost-btn">Edit Profile</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'logout' %}" class="ghost-btn">Logout</a>  {# new: real logout link #}
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-start;">
+        {% if role == 'seller' or role == 'admin' %}
+          <button class="action-btn" data-open-modal>New Listing</button>
         {% endif %}
+        <a href="{% url 'edit_profile' %}" class="ghost-btn">Edit Profile</a>
+        <a href="{% url 'logout' %}" class="ghost-btn">Logout</a>
       </div>
     </section>
 
     <section class="stats-grid">
-      <article class="stat-card"><span>Cart items</span><strong>{{ cart_count }}</strong></article>  {# new: real count #}
-      <article class="stat-card"><span>Wishlist items</span><strong>0</strong></article>
-      <article class="stat-card"><span>Ratings given</span><strong>0</strong></article>
+      <article class="stat-card">
+        <span>Cart items</span>
+        <strong>{{ cart_count }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Wishlist</span>
+        <strong>{{ wishlist_items|length }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Reviews given</span>
+        <strong>{{ review_count }}</strong>
+      </article>
+
+      {% if role == 'seller' or role == 'admin' %}
+      <article class="stat-card">
+        <span>My listings</span>
+        <strong>{{ product_count }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Total orders</span>
+        <strong>{{ total_orders }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Total revenue</span>
+        <strong>&#8364;{{ total_revenue }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Avg rating</span>
+        <strong>{% if avg_rating_all %}{{ avg_rating_all|floatformat:1 }} &#9733;{% else %}none{% endif %}</strong>
+      </article>
+      {% endif %}
+
+      {% if role == 'admin' %}
+      <article class="stat-card">
+        <span>Total users</span>
+        <strong>{{ total_users }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Total products</span>
+        <strong>{{ total_products }}</strong>
+      </article>
+      {% endif %}
     </section>
 
-    {# new: show real cart items in dashboard #}
+    {% if role == 'seller' or role == 'admin' %}
+    <section style="margin-top:2.5rem;">
+      <p class="section-label">{% if role == 'admin' %}ALL LISTINGS{% else %}MY LISTINGS{% endif %}</p>
+
+      {% if my_products %}
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            {% if role == 'admin' %}<th>Seller</th>{% endif %}
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in my_products %}
+          <tr>
+            <td><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></td>
+            <td>{{ product.category.name }}</td>
+            <td>&#8364;{{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            {% if role == 'admin' %}<td>{{ product.owner.username|default:"none" }}</td>{% endif %}
+            <td>
+              <div class="row-actions">
+                <button class="ghost-btn" data-edit-btn="{{ product.id }}">Edit</button>
+                <a href="{% url 'delete_listing' product.id %}" class="ghost-btn" data-delete-listing>Delete</a>
+              </div>
+              <div class="edit-form" data-edit-form="{{ product.id }}">
+                <form method="POST" action="{% url 'edit_listing' product.id %}" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="edit-form-grid">
+                    <label>Name<input name="name" type="text" value="{{ product.name }}" /></label>
+                    <label>Brand<input name="brand" type="text" value="{{ product.brand }}" /></label>
+                    <label>Price<input name="price" type="number" step="0.01" value="{{ product.price }}" /></label>
+                    <label>Stock<input name="stock" type="number" value="{{ product.stock }}" /></label>
+                    <label>Category
+                      <select name="category">
+                        {% for cat in categories %}
+                          <option value="{{ cat.id }}" {% if cat.id == product.category.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </label>
+                    <label>Image<input name="image" type="file" accept="image/*" /></label>
+                  </div>
+                  <label>Description
+                    <textarea name="description" rows="2" style="width:100%;font-family:inherit;margin-top:0.25rem;">{{ product.description }}</textarea>
+                  </label>
+                  <button type="submit" class="action-btn" style="margin-top:0.75rem;">Save Changes</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p>No listings yet. Click New Listing to add your first product.</p>
+      {% endif %}
+    </section>
+
+    {% if orders %}
+    <section style="margin-top:2.5rem;">
+      <p class="section-label">RECENT ORDERS</p>
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Buyer</th>
+            <th>Qty</th>
+            <th>Revenue</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td>{{ order.product.name }}</td>
+            <td>{{ order.buyer.username }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>&#8364;{{ order.total_price }}</td>
+            <td>{{ order.created_at|date:"d M Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    {% if role == 'admin' %}
+    <section style="margin-top:2.5rem;">
+      <p class="section-label">MANAGE CATEGORIES</p>
+      <form method="POST" action="{% url 'create_category' %}" style="display:flex;gap:0.75rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap;">
+        {% csrf_token %}
+        <label style="font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;display:flex;flex-direction:column;gap:0.4rem;">
+          Name
+          <input name="name" type="text" placeholder="New category name" style="border:1px solid rgba(23,23,23,0.16);background:rgba(255,255,255,0.7);padding:0.75rem 1rem;border-radius:10px;" />
+        </label>
+        <label style="font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;display:flex;flex-direction:column;gap:0.4rem;">
+          Description
+          <input name="description" type="text" placeholder="Optional description" style="border:1px solid rgba(23,23,23,0.16);background:rgba(255,255,255,0.7);padding:0.75rem 1rem;border-radius:10px;" />
+        </label>
+        <button type="submit" class="ghost-btn" style="margin-top:0;">Add Category</button>
+      </form>
+
+      <table class="analytics-table">
+        <thead>
+          <tr><th>Name</th><th>Description</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for cat in categories %}
+          <tr>
+            <td>{{ cat.name }}</td>
+            <td>{{ cat.description|default:"none" }}</td>
+            <td>
+              <a href="{% url 'delete_category' cat.id %}" class="ghost-btn" onclick="return confirm('Delete category {{ cat.name }}?')">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:2.5rem;">
+      <p class="section-label">ALL USERS</p>
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Staff</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in all_users %}
+          <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{% if u.profile %}{{ u.profile.role }}{% else %}none{% endif %}</td>
+            <td>{% if u.is_staff %}Yes{% else %}No{% endif %}</td>
+            <td>
+              {% if u.id != user.id %}
+                <a href="{% url 'delete_user' u.id %}" class="ghost-btn" data-delete-user>Delete</a>
+              {% else %}
+                <span style="opacity:0.4;">You</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
+
     {% if cart_items %}
-    <section class="dashboard-panels">
+    <section class="dashboard-panels" style="margin-top:2.5rem;">
       <article class="dashboard-panel">
         <h2>Your Cart</h2>
         {% for item in cart_items %}
         <div class="dashboard-list-item">
-          <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+          <span>{{ item.product.name }} x{{ item.quantity }}  &#8364;{{ item.product.price }}</span>
           <a href="{% url 'product_detail' item.product.id %}">Open</a>
+        </div>
+        {% endfor %}
+        <a href="{% url 'cart' %}" class="ghost-btn" style="margin-top:1rem;display:inline-block;">Go to Cart</a>
+      </article>
+    </section>
+    {% else %}
+      <p style="margin-top:1.5rem;opacity:0.6;">Your cart is empty. <a href="{% url 'products' %}" style="color:var(--orange);">Browse the collection</a></p>
+    {% endif %}
+
+    {% if wishlist_items %}
+    <section class="dashboard-panels" style="margin-top:2rem;">
+      <article class="dashboard-panel">
+        <h2>Wishlist</h2>
+        {% for wish in wishlist_items %}
+        <div class="dashboard-list-item">
+          <span>{{ wish.product.name }}  &#8364;{{ wish.product.price }}</span>
+          <div style="display:flex;gap:0.75rem;">
+            <a href="{% url 'product_detail' wish.product.id %}">View</a>
+            <a href="{% url 'remove_from_wishlist' wish.product.id %}">Remove</a>
+          </div>
         </div>
         {% endfor %}
       </article>
     </section>
-    {% else %}
-      {% if not user.is_authenticated %}
-        <p><a href="{% url 'login' %}">Log in</a> to see your cart and wishlist.</p>
-      {% else %}
-        <p>Your cart is empty. <a href="{% url 'products' %}">Browse the collection.</a></p>
-      {% endif %}
     {% endif %}
 
   </main>
 
-  <script src="{% static 'store/js/script.js' %}"></script>
+  {% if role == 'seller' or role == 'admin' %}
+  <div class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <p class="section-label">NEW LISTING</p>
+      <h2>Create a Listing</h2>
+
+      <form class="modal-form" method="POST" action="{% url 'create_listing' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label>Product name
+          <input name="name" type="text" placeholder="Give your item a name" required />
+        </label>
+
+        <div class="modal-row">
+          <label>Brand
+            <input name="brand" type="text" placeholder="Brand or maker" />
+          </label>
+          <label>Category
+            <select name="category" required>
+              <option value="">Select a category</option>
+              {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="modal-row">
+          <label>Price in euro
+            <input name="price" type="number" step="0.01" min="0" placeholder="0.00" required />
+          </label>
+          <label>Stock quantity
+            <input name="stock" type="number" min="0" placeholder="0" required />
+          </label>
+        </div>
+
+        <label>Description
+          <textarea name="description" rows="3" placeholder="Describe the item..." style="width:100%;font-family:inherit;margin-top:0.25rem;" required></textarea>
+        </label>
+
+        <label>Product image
+          <input name="image" type="file" accept="image/*" />
+        </label>
+
+        <button type="submit" class="action-btn">Publish Listing</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <script src="{% static 'store/js/shared.js' %}"></script>
   <script src="{% static 'store/js/dashboard.js' %}"></script>
 </body>
 </html>

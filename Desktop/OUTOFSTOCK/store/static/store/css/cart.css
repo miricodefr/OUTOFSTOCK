@@ -1,14 +1,14 @@
-/* cart layout */
+/* cart page: left column is items, right is summary */
 .cart-layout {
   display: grid;
   grid-template-columns: 1.5fr 0.8fr;
   gap: 2rem;
 }
 
-/* item row */
+/* each cart row: thumbnail / text / price / remove button */
 .cart-item-row {
   display: grid;
-  grid-template-columns: 90px 1fr auto;
+  grid-template-columns: 90px 1fr auto auto;
   align-items: center;
   gap: 1rem;
   margin-top: 1rem;
@@ -16,13 +16,61 @@
   padding: 1.4rem;
 }
 
-/* cart item image */
+/* product thumbnail in the cart */
 .cart-thumb {
   min-height: 90px;
   border-radius: 12px;
+  overflow: hidden;
+  background: var(--card-bg);
 }
 
-/* summary section */
+/* heading and description inside the cart row */
+.cart-copy h3 {
+  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
+  color: var(--page-text);
+}
+
+.cart-copy p {
+  font-size: 0.85rem;
+  color: var(--page-text);
+  opacity: 0.65;
+}
+
+/* price column */
+.cart-item-row > strong {
+  font-family: var(--font-mono);
+  color: var(--page-text);
+}
+
+/* remove button uses theme variables */
+.cart-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--btn-border);
+  color: var(--btn-text);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  background: none;
+  margin: 0;
+}
+
+.cart-remove-btn:hover {
+  background: #e05050;
+  border-color: #e05050;
+  color: #fff;
+}
+
+/* the right hand summary box sticks as you scroll */
 .cart-summary {
   align-self: start;
   position: sticky;
@@ -31,34 +79,133 @@
   padding: 1.4rem;
 }
 
-/* summary row */
 .summary-row {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
+  padding: 0.4rem 0;
+  color: var(--page-text);
 }
 
-/* lighter summary label */
 .summary-row span {
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
-/* total row */
+/* discount row is highlighted orange */
+.discount-row span,
+.discount-row strong {
+  color: var(--orange);
+  opacity: 1;
+}
+
 .total-row {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(23, 23, 23, 0.12);
+  border-top: 1px solid var(--divider);
 }
 
-/* checkout button */
-.cart-summary .action-btn {
-  margin-top: 0;
+.total-row span,
+.total-row strong {
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
-/* phone cart fix */
+/* discount code section */
+.discount-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--divider);
+}
+
+.discount-section > p {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  color: var(--page-text);
+  opacity: 0.6;
+}
+
+/* code input and apply button side by side */
+.discount-row-input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.discount-row-input input {
+  flex: 1;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--page-text);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discount-apply-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  background: none;
+  cursor: pointer;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.discount-apply-btn:hover {
+  background: var(--orange);
+  color: #fff;
+}
+
+/* badge showing active code */
+.code-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(248,90,31,0.1);
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  margin-top: 0.5rem;
+}
+
+.code-tag a {
+  color: var(--orange);
+  font-size: 1.1rem;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.code-tag a:hover { opacity: 1; }
+
+/* error and success messages under the code input */
+.code-msg {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  margin-top: 0.4rem;
+}
+
+.code-msg.error   { color: #e05050; }
+.code-msg.success { color: var(--green); }
+
+/* phone */
 @media (max-width: 768px) {
-  .cart-item-row strong {
-    display: inline-block;
-    margin-top: 0.8rem;
-  }
+  .cart-layout { grid-template-columns: 1fr; }
+  .cart-item-row { grid-template-columns: 80px 1fr; }
+  .cart-item-row > strong,
+  .cart-remove-btn { grid-column: 2; }
 }

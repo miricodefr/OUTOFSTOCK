@@ -1,90 +1,184 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | OUTOFSTOCK™</title>
+  <title>OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
-  <link rel="stylesheet" href="{% static 'store/css/dashboard.css' %}" />
+  <link rel="stylesheet" href="{% static 'store/css/index.css' %}" />
 </head>
-<body class="theme-light inner-page-body">
+<body class="theme-light">
   <div class="noise"></div>
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
-      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'home' %}" class="active-link" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Home</a>
       <a href="{% url 'products' %}">Collection</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>  {# new #}
+        <a href="{% url 'logout' %}">Logout</a>
       {% else %}
         <a href="{% url 'login' %}">Login</a>
       {% endif %}
-      <a href="{% url 'dashboard' %}" class="active-link">Dashboard</a>
-      <a href="{% url 'cart' %}">Cart (<span data-cart-count>{{ cart_count }}</span>)</a>  {# new: real count #}
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'cart' %}">Cart</a>
     </nav>
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>RECENT VIEWS</span><span class="dot-sep">◆</span>
-      <span>WISHLIST</span><span class="dot-sep">◆</span>
-      <span>RATINGS HISTORY</span><span class="dot-sep">◆</span>
-      <span>PROFILE INFO</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      <span>ITEMS IN LIMBO</span><span class="dot-sep">&#9670;</span>
+      <span>OBJECTS STILL EXISTING</span><span class="dot-sep">&#9670;</span>
+      <span>ARCHIVE OPEN</span><span class="dot-sep">&#9670;</span>
+      <span>UPLOAD YOUR UNFINISHED</span><span class="dot-sep">&#9670;</span>
+      <span>404 THINGS FOUND</span><span class="dot-sep">&#9670;</span>
+      <span>NO RETURNS</span><span class="dot-sep">&#9670;</span>
+      <span>STILL HERE</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
 
-  <main class="inner-page">
-    <section class="dashboard-header">
-      <div>
-        <p class="section-label">PERSONAL DASHBOARD</p>
-        {# new: show real username from Django session #}
-        <h1>Welcome back, <span data-user-name>{{ user.username|default:"Guest" }}</span>.</h1>
-        <p class="page-intro">This page connects to Django user data, cart, and purchases.</p>
-        <p data-user-email>{{ user.email|default:"Not logged in" }}</p>  {# new #}
-      </div>
+  <main>
+    <section class="poster-hero" id="landing">
+      <div class="poster-body">
+        <div class="squiggle squiggle-one"></div>
+        <div class="squiggle squiggle-two"></div>
+        <div class="squiggle squiggle-three"></div>
 
-      <div>
-        <a href="{% url 'register' %}" class="ghost-btn">Edit Profile</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'logout' %}" class="ghost-btn">Logout</a>  {# new: real logout link #}
-        {% endif %}
-      </div>
-    </section>
-
-    <section class="stats-grid">
-      <article class="stat-card"><span>Cart items</span><strong>{{ cart_count }}</strong></article>  {# new: real count #}
-      <article class="stat-card"><span>Wishlist items</span><strong>0</strong></article>
-      <article class="stat-card"><span>Ratings given</span><strong>0</strong></article>
-    </section>
-
-    {# new: show real cart items in dashboard #}
-    {% if cart_items %}
-    <section class="dashboard-panels">
-      <article class="dashboard-panel">
-        <h2>Your Cart</h2>
-        {% for item in cart_items %}
-        <div class="dashboard-list-item">
-          <span>{{ item.product.name }} (x{{ item.quantity }})</span>
-          <a href="{% url 'product_detail' item.product.id %}">Open</a>
+        <div class="floating-shape" aria-hidden="true">
+          <div class="shape-head"></div>
+          <div class="shape-body"></div>
+          <div class="shape-leg leg-one"></div>
+          <div class="shape-leg leg-two"></div>
+          <div class="shape-arm arm-one"></div>
+          <div class="shape-arm arm-two"></div>
         </div>
-        {% endfor %}
-      </article>
-    </section>
-    {% else %}
-      {% if not user.is_authenticated %}
-        <p><a href="{% url 'login' %}">Log in</a> to see your cart and wishlist.</p>
-      {% else %}
-        <p>Your cart is empty. <a href="{% url 'products' %}">Browse the collection.</a></p>
-      {% endif %}
-    {% endif %}
 
+        <section class="screen-cluster">
+
+          {% with p=tv_products.0 %}
+          <a href="{% if p %}{% url 'product_detail' p.id %}{% else %}{% url 'products' %}{% endif %}"
+             class="sale-item screen-item screen-one"
+             data-item="{% if p %}{{ p.name }}{% else %}Nothing here{% endif %}">
+            <div class="screen-frame">
+              <div class="screen-content {% if not p %}placeholder placeholder-one{% endif %}">
+                {% if p and p.image %}
+                  <img src="{{ p.image.url }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                {% elif p %}
+                  <span>{{ p.name }}</span>
+                  <p>&#8364;{{ p.price }}</p>
+                {% else %}
+                  <span>NOTHING HERE</span>
+                  <p>Add some listings</p>
+                {% endif %}
+              </div>
+              <div class="screen-controls"><span></span><span></span></div>
+            </div>
+          </a>
+          {% endwith %}
+
+          {% with p=tv_products.1 %}
+          <a href="{% if p %}{% url 'product_detail' p.id %}{% else %}{% url 'products' %}{% endif %}"
+             class="sale-item screen-item screen-two"
+             data-item="{% if p %}{{ p.name }}{% else %}Nothing here{% endif %}">
+            <div class="screen-frame">
+              <div class="screen-content {% if not p %}placeholder placeholder-two{% endif %}">
+                {% if p and p.image %}
+                  <img src="{{ p.image.url }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                {% elif p %}
+                  <span>{{ p.name }}</span>
+                  <p>&#8364;{{ p.price }}</p>
+                {% else %}
+                  <span>NOTHING HERE</span>
+                  <p>Add some listings</p>
+                {% endif %}
+              </div>
+              <div class="screen-controls"><span></span><span></span></div>
+            </div>
+          </a>
+          {% endwith %}
+
+          {% with p=tv_products.2 %}
+          <a href="{% if p %}{% url 'product_detail' p.id %}{% else %}{% url 'products' %}{% endif %}"
+             class="sale-item screen-item screen-three"
+             data-item="{% if p %}{{ p.name }}{% else %}Nothing here{% endif %}">
+            <div class="screen-frame modern-frame">
+              <div class="screen-content {% if not p %}placeholder placeholder-three{% endif %}">
+                {% if p and p.image %}
+                  <img src="{{ p.image.url }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                {% elif p %}
+                  <span>{{ p.name }}</span>
+                  <p>&#8364;{{ p.price }}</p>
+                {% else %}
+                  <span>NOTHING HERE</span>
+                  <p>Add some listings</p>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+          {% endwith %}
+
+          {% with p=tv_products.3 %}
+          <a href="{% if p %}{% url 'product_detail' p.id %}{% else %}{% url 'products' %}{% endif %}"
+             class="sale-item screen-item screen-four"
+             data-item="{% if p %}{{ p.name }}{% else %}Nothing here{% endif %}">
+            <div class="screen-frame">
+              <div class="screen-content {% if not p %}placeholder placeholder-four{% endif %}">
+                {% if p and p.image %}
+                  <img src="{{ p.image.url }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                {% elif p %}
+                  <span>{{ p.name }}</span>
+                  <p>&#8364;{{ p.price }}</p>
+                {% else %}
+                  <span>NOTHING HERE</span>
+                  <p>Add some listings</p>
+                {% endif %}
+              </div>
+              <div class="screen-controls"><span></span><span></span></div>
+            </div>
+          </a>
+          {% endwith %}
+
+        </section>
+
+        <section class="poster-title-block">
+          <div class="poster-title-left">
+            <h1>OUTOFSTOCK</h1>
+          </div>
+          <div class="poster-title-right">
+            <h2>ARCHIVE</h2>
+            <div class="color-dots">
+              <button class="dot dark"   data-theme="dark"   aria-label="Dark theme"></button>
+              <button class="dot orange" data-theme="orange" aria-label="Orange theme"></button>
+              <button class="dot light"  data-theme="light"  aria-label="Light theme"></button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="manifesto-section" id="about">
+      <div class="section-label">SYSTEM NOTE</div>
+      <h2>Objects do not disappear just because people stop wanting them.</h2>
+      <p>
+        OUTOFSTOCK is a marketplace for unfinished, strange, abandoned, or forgotten things.
+        Browse the inventory, save items to your cart, rate your favorites, and build a profile around your archive.
+      </p>
+      <a href="{% url 'products' %}" class="action-btn">Browse Collection</a>
+    </section>
+
+    <section class="sell-section" id="sell">
+      <div class="section-label">GET STARTED</div>
+      <h2>Create an account and start listing your items today.</h2>
+      <p>
+        Register as a seller to add your own products. Buyers can browse, review, wishlist, and simulate checkout.
+      </p>
+      <a href="{% url 'register' %}" class="action-btn">Join the Archive</a>
+    </section>
   </main>
 
-  <script src="{% static 'store/js/script.js' %}"></script>
-  <script src="{% static 'store/js/dashboard.js' %}"></script>
+  <script src="{% static 'store/js/shared.js' %}"></script>
+  <script src="{% static 'store/js/index.js' %}"></script>
 </body>
 </html>

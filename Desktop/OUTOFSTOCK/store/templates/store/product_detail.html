@@ -1,142 +1,160 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ product.name }} | OUTOFSTOCK™</title>  {# new: dynamic title #}
+  <title>{{ product.name }} | OUTOFSTOCK</title>
   <link rel="stylesheet" href="{% static 'store/css/shared.css' %}">
-  <link rel="stylesheet" href="{% static 'store/css/item.css' %}" />
+  <link rel="stylesheet" href="{% static 'store/css/item.css' %}">
 </head>
 <body class="theme-light inner-page-body">
   <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-glow"></div>
 
   <header class="site-header">
-    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
+    <a href="{% url 'home' %}" class="logo">OUTOFSTOCK</a>
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>  {# new #}
+        <a href="{% url 'logout' %}">Logout</a>
       {% else %}
         <a href="{% url 'login' %}">Login</a>
       {% endif %}
       <a href="{% url 'dashboard' %}">Dashboard</a>
-      <a href="{% url 'cart' %}">Cart (<span data-cart-count>0</span>)</a>
+      <a href="{% url 'cart' %}">Cart</a>
     </nav>
   </header>
 
   <div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-      <span>ITEM PAGE</span><span class="dot-sep">◆</span>
-      <span>LIKES / RATINGS READY</span><span class="dot-sep">◆</span>
-      <span>SIMILAR ITEMS BELOW</span><span class="dot-sep">◆</span>
+    <div class="ticker-track">
+      <span>ITEM DETAIL</span><span class="dot-sep">&#9670;</span>
+      <span>LEAVE A REVIEW</span><span class="dot-sep">&#9670;</span>
+      <span>SIMILAR ITEMS BELOW</span><span class="dot-sep">&#9670;</span>
+      <span>ADD TO WISHLIST</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
 
   <main class="inner-page">
-    <section class="item-layout">
+    <a href="{% url 'products' %}" class="back-link">&#8592; Back to collection</a>
 
-      {# new: show product image if it exists, otherwise show placeholder #}
+    <section class="item-layout">
       <div class="item-visual placeholder-one" data-item-image>
         {% if product.image %}
-          <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;" />
         {% else %}
           <span>{{ product.name }}</span>
         {% endif %}
       </div>
 
       <div class="item-details">
-        {# new: dynamic category and brand #}
-        <p class="section-label">{{ product.category.name }} / {{ product.brand }}</p>
-        <h1 data-item-title>{{ product.name }}</h1>
-        <p class="item-price" data-item-price>€{{ product.price }}</p>
-        <p class="item-description" data-item-description>{{ product.description }}</p>
+        <p class="section-label">{{ product.category.name }}{% if product.brand %} / {{ product.brand }}{% endif %}</p>
+        <h1>{{ product.name }}</h1>
+        <p class="item-price">&#8364;{{ product.price }}</p>
+        <p class="item-description">{{ product.description }}</p>
 
         <div class="detail-list">
-          {# new: dynamic stock status #}
-          <div><span>Status</span><strong>{% if product.stock > 0 %}Available ({{ product.stock }} left){% else %}Out of Stock{% endif %}</strong></div>
+          <div>
+            <span>Status</span>
+            <strong>{% if product.stock > 0 %}Available  {{ product.stock }} left{% else %}Out of Stock{% endif %}</strong>
+          </div>
           <div><span>Category</span><strong>{{ product.category.name }}</strong></div>
-          {# new: dynamic seller name #}
           <div><span>Seller</span><strong>{{ product.owner.username|default:"Unknown" }}</strong></div>
         </div>
 
+        {% if avg_rating %}
+        <div class="rating-box">
+          <p class="rating-title">Average rating  {{ avg_rating|floatformat:1 }} out of 5</p>
+          <div class="avg-stars">
+            {% for i in "12345" %}{% if forloop.counter <= avg_rating|floatformat:"0"|add:"0" %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+          </div>
+          <p style="font-size:0.85rem;opacity:0.6;">{{ reviews.count }} review{{ reviews.count|pluralize }}</p>
+        </div>
+        {% endif %}
+
         <div class="item-actions">
-          {# new: add to cart form — only if logged in and in stock #}
           {% if user.is_authenticated and product.stock > 0 %}
-            <form method="post" action="{% url 'add_to_cart' product.id %}" style="display:inline;">
+            <form method="POST" action="{% url 'add_to_cart' product.id %}" style="display:inline;">
               {% csrf_token %}
               <button type="submit" class="action-btn">Add to Cart</button>
             </form>
           {% elif not user.is_authenticated %}
             <a href="{% url 'login' %}" class="action-btn">Login to Buy</a>
           {% else %}
-            <button type="button" class="action-btn" disabled>Out of Stock</button>
+            <button type="button" class="action-btn" disabled style="opacity:0.4;cursor:not-allowed;">Out of Stock</button>
           {% endif %}
-          <a href="{% url 'dashboard' %}" class="ghost-btn">Save to Wishlist</a>
-        </div>
 
-        {# new: show average rating if reviews exist #}
-        {% if reviews %}
-        <div class="rating-box">
-          <p class="rating-title">User rating</p>
-          <div class="rating-stars">
-            {% for review in reviews %}★{% endfor %}
-          </div>
-          <p>{{ reviews.count }} review(s)</p>
+          {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'add_to_wishlist' product.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="ghost-btn">Save to Wishlist</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="ghost-btn">Login to Wishlist</a>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
     </section>
 
-    {# new: review form for logged-in users #}
     {% if user.is_authenticated %}
-    <section class="inner-page" style="margin-top:2rem;">
+    <section class="review-section">
       <p class="section-label">LEAVE A REVIEW</p>
-      <form method="post">
+      <form method="POST">
         {% csrf_token %}
-        <label>Rating (1–5):
-          <select name="rating">
-            <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
-          </select>
+        <label style="display:block;margin-bottom:0.5rem;font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;">Rating</label>
+        <div class="star-picker">
+          <input type="radio" name="rating" id="s5" value="5"><label for="s5" title="5 stars">&#9733;</label>
+          <input type="radio" name="rating" id="s4" value="4"><label for="s4" title="4 stars">&#9733;</label>
+          <input type="radio" name="rating" id="s3" value="3" checked><label for="s3" title="3 stars">&#9733;</label>
+          <input type="radio" name="rating" id="s2" value="2"><label for="s2" title="2 stars">&#9733;</label>
+          <input type="radio" name="rating" id="s1" value="1"><label for="s1" title="1 star">&#9733;</label>
+        </div>
+        <label style="display:block;margin-top:1rem;font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;">
+          Comment
+          <textarea name="comment" rows="3" style="width:100%;margin-top:0.4rem;font-family:inherit;padding:0.75rem;border:1px solid rgba(23,23,23,0.15);border-radius:10px;resize:vertical;"></textarea>
         </label>
-        <label style="display:block;margin-top:0.5rem;">Comment:
-          <textarea name="comment" rows="3" style="width:100%;margin-top:0.25rem;"></textarea>
-        </label>
-        <button type="submit" class="ghost-btn" style="margin-top:0.5rem;">Submit Review</button>
+        <button type="submit" class="ghost-btn" style="margin-top:0.75rem;">Submit Review</button>
       </form>
 
-      {# new: show existing reviews #}
       {% for review in reviews %}
-      <div style="margin-top:1rem;border-top:1px solid #ccc;padding-top:0.5rem;">
-        <strong>{{ review.user.username }}</strong> — {{ review.rating }}/5
-        <p>{{ review.comment }}</p>
+      <div class="review-block">
+        <strong>{{ review.user.username }}</strong>
+        <span class="review-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+        <span style="font-size:0.8rem;opacity:0.55;margin-left:0.4rem;">{{ review.rating }} out of 5</span>
+        {% if review.comment %}<p style="margin-top:0.4rem;">{{ review.comment }}</p>{% endif %}
       </div>
+      {% empty %}
+        <p style="margin-top:1rem;opacity:0.55;">No reviews yet. Be the first to leave one.</p>
       {% endfor %}
     </section>
+    {% else %}
+      <p style="margin-top:2rem;"><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
     {% endif %}
 
-    {# new: dynamic recommended products from same category #}
     {% if recommended %}
     <section class="related-section">
-      <div class="section-label">SIMILAR ITEMS</div>
+      <p class="section-label">SIMILAR ITEMS</p>
       <div class="mini-grid">
         {% for item in recommended %}
         <a href="{% url 'product_detail' item.id %}" class="mini-card">
-          <div class="mini-thumb placeholder-two"></div>
+          {% if item.image %}
+            <div class="mini-thumb" style="background:none;padding:0;overflow:hidden;">
+              <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width:100%;height:150px;object-fit:cover;border-radius:14px;" />
+            </div>
+          {% else %}
+            <div class="mini-thumb placeholder-two"></div>
+          {% endif %}
           <h3>{{ item.name }}</h3>
-          <p>€{{ item.price }}</p>
+          <p>&#8364;{{ item.price }}</p>
         </a>
         {% endfor %}
       </div>
     </section>
     {% endif %}
-
   </main>
 
-  <script src="{% static 'store/js/script.js' %}"></script>
+  <script src="{% static 'store/js/shared.js' %}"></script>
   <script src="{% static 'store/js/item.js' %}"></script>
 </body>
 </html>
