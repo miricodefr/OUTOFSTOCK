@@ -2,17 +2,35 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# Category is used to group products
+# Extra information for each user
+class Profile(models.Model):
+    ROLE_CHOICES = [
+        ('buyer', 'Buyer'),
+        ('seller', 'Seller'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='buyer')
+
+    def __str__(self):
+        return f'{self.user.username} - {self.role}'
+
+
+# Product categories
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
 
 
-# Product stores the items in the catalogue
+# Listings/products in the website
 class Product(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     brand = models.CharField(max_length=100, blank=True)
@@ -25,7 +43,7 @@ class Product(models.Model):
         return self.name
 
 
-# Review stores ratings/comments from users
+# Reviews from logged-in users
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -36,7 +54,7 @@ class Review(models.Model):
         return f'{self.user.username} - {self.product.name}'
 
 
-# CartItem stores products added to a user's cart
+# Items added to cart by users
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -44,3 +62,12 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f'{self.product.name} x {self.quantity}'
+
+
+# Wishlist items saved by buyers
+class WishlistItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.username} likes {self.product.name}'

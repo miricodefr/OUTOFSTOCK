@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Product
 
 
 # homepage
@@ -6,9 +7,10 @@ def home(request):
     return render(request, 'store/home.html')
 
 
-# product list page
+# collection page, gets products from database
 def products(request):
-    return render(request, 'store/products.html')
+    all_products = Product.objects.all()
+    return render(request, 'store/products.html', {'products': all_products})
 
 
 # single product page

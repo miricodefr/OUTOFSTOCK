@@ -1,10 +1,5 @@
 {% load static %}
-{% url 'home' %}
-{% url 'products' %}
-{% url 'cart' %}
-{% url 'dashboard' %}
-{% url 'login' %}
-{% url 'register' %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +16,7 @@
   <header class="site-header">
     <a href="{% url 'home' %}" class="logo">OUTOFSTOCK™</a>
     <nav class="main-nav">
-      <a href="{% url 'home' %}"></a>Home</a>
+      <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}">Collection</a>
       <a href="{% url 'login' %}" class="active-link">Login</a>
       <a href="{% url 'dashboard' %}">Dashboard</a>
