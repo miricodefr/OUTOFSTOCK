@@ -1,0 +1,1 @@
+web: gunicorn outofstock_project.wsgi --log-file -
