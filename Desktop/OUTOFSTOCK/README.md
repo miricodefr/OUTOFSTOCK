@@ -16,10 +16,10 @@
    python manage.py migrate
    ```
 
-3. **Create a superuser (admin)**
-   ```bash
-   python manage.py createsuperuser
-   ```
+3. **User Credentials**
+   1) Name: user| Password: User123! | Email: user@gmail.com
+   2) Name: seller | Password: Seller123! | Email: seller@gmail.com
+   3) Name: Admin | Password: Test123! | Email: admin@outofstock.com
 
 4. **Run the development server**
    ```bash

@@ -17,11 +17,7 @@
     <nav class="main-nav">
       <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'products' %}" class="active-link">Collection</a>
-      {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>
-      {% else %}
-        <a href="{% url 'login' %}">Login</a>
-      {% endif %}
+      {% if user.is_authenticated %}<a href="{% url 'logout' %}">Logout</a>{% else %}<a href="{% url 'login' %}">Login</a>{% endif %}
       <a href="{% url 'dashboard' %}">Dashboard</a>
       <a href="{% url 'cart' %}">Cart</a>
     </nav>
@@ -31,9 +27,8 @@
     <div class="ticker-track">
       <span>FILTER BY CATEGORY</span><span class="dot-sep">&#9670;</span>
       <span>SEARCH THE ARCHIVE</span><span class="dot-sep">&#9670;</span>
-      <span>UNFINISHED OBJECTS ONLY</span><span class="dot-sep">&#9670;</span>
-      <span>BROWSE THE COLLECTION</span><span class="dot-sep">&#9670;</span>
-      <span>NO RESTOCKS</span><span class="dot-sep">&#9670;</span>
+      <span>BROWSE BY SUB-CATEGORY</span><span class="dot-sep">&#9670;</span>
+      <span>SORT AND FILTER</span><span class="dot-sep">&#9670;</span>
       <span>STRANGE INVENTORY</span><span class="dot-sep">&#9670;</span>
     </div>
   </div>
@@ -48,8 +43,7 @@
     </section>
 
     <section class="filter-panel">
-      <form class="filter-grid" method="GET" action="{% url 'products' %}">
-
+      <form class="filter-grid" method="GET" action="{% url 'products' %}" id="filter-form">
         <input type="hidden" name="sort" value="{{ sort_by }}" />
 
         <div class="filter-field">
@@ -58,11 +52,26 @@
         </div>
 
         <div class="filter-field">
-          <label for="category">Category</label>
-          <select id="category" name="category">
+          <label for="category-select">Category</label>
+          <select id="category-select" name="category">
             <option value="">All categories</option>
-            {% for cat in categories %}
-              <option value="{{ cat.id }}" {% if selected_cat == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+            {% for cat in top_categories %}
+              <option value="{{ cat.id }}" {% if selected_cat == cat.id|stringformat:"s" %}selected{% endif %}>
+                {{ cat.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- sub-category row is shown by jQuery when a parent category is picked -->
+        <div class="filter-field" id="subcategory-wrap" {% if not selected_subcat %}style="display:none;"{% endif %}>
+          <label for="subcategory-select">Sub-category</label>
+          <select id="subcategory-select" name="subcategory">
+            <option value="">All sub-categories</option>
+            {% for sub in subcategories %}
+              <option value="{{ sub.id }}" {% if selected_subcat == sub.id|stringformat:"s" %}selected{% endif %}>
+                {{ sub.name }}
+              </option>
             {% endfor %}
           </select>
         </div>
@@ -92,7 +101,6 @@
           <button type="submit" class="action-btn">Search</button>
           <a href="{% url 'products' %}" class="ghost-btn">Clear</a>
         </div>
-
       </form>
     </section>
 
@@ -100,18 +108,18 @@
       <div class="catalog-top-bar">
         <p>{{ result_count }} item{{ result_count|pluralize }} found</p>
         <div class="sort-options">
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=newest"   class="sort-pill {% if sort_by == 'newest'     %}is-active{% endif %}">Newest</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=oldest"   class="sort-pill {% if sort_by == 'oldest'     %}is-active{% endif %}">Oldest</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_asc" class="sort-pill {% if sort_by == 'price_asc'  %}is-active{% endif %}">Price low</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_desc" class="sort-pill {% if sort_by == 'price_desc' %}is-active{% endif %}">Price high</a>
-          <a href="?q={{ query }}&category={{ selected_cat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=az"        class="sort-pill {% if sort_by == 'az'         %}is-active{% endif %}">A to Z</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&subcategory={{ selected_subcat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=newest"    class="sort-pill {% if sort_by == 'newest'     %}is-active{% endif %}">Newest</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&subcategory={{ selected_subcat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=oldest"    class="sort-pill {% if sort_by == 'oldest'     %}is-active{% endif %}">Oldest</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&subcategory={{ selected_subcat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_asc" class="sort-pill {% if sort_by == 'price_asc'  %}is-active{% endif %}">Price low</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&subcategory={{ selected_subcat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=price_desc" class="sort-pill {% if sort_by == 'price_desc' %}is-active{% endif %}">Price high</a>
+          <a href="?q={{ query }}&category={{ selected_cat }}&subcategory={{ selected_subcat }}&brand={{ selected_brand }}&max_price={{ selected_price }}&sort=az"        class="sort-pill {% if sort_by == 'az'         %}is-active{% endif %}">A to Z</a>
         </div>
       </div>
 
-      <div class="catalog-grid" data-product-grid>
+      <div class="catalog-grid">
         {% for product in products %}
         <article class="catalog-card">
-          <a href="{% url 'product_detail' product.id %}" class="catalog-image">
+          <a href="{% url 'product_detail' product.id %}" class="catalog-image{% if product.stock == 0 %} is-sold-out{% endif %}">
             {% if product.image %}
               <img src="{{ product.image.url }}" alt="{{ product.name }}" />
             {% else %}
@@ -119,16 +127,14 @@
             {% endif %}
           </a>
           <div class="catalog-copy">
-            <p class="catalog-meta">{{ product.category.name }}{% if product.brand %} / {{ product.brand }}{% endif %}</p>
+            <p class="catalog-meta">
+              {% if product.category.parent %}{{ product.category.parent.name }} &rsaquo; {% endif %}{{ product.category.name }}{% if product.brand %} / {{ product.brand }}{% endif %}
+            </p>
             <h3><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h3>
             <p>{{ product.description|truncatechars:90 }}</p>
             <div class="catalog-row">
               <span>&#8364;{{ product.price }}</span>
-              {% if product.stock > 0 %}
-                <span class="stock-in">In stock</span>
-              {% else %}
-                <span class="stock-out">Out of stock</span>
-              {% endif %}
+              {% if product.stock > 0 %}<span class="stock-in">In stock</span>{% else %}<span class="stock-out">SOLD OUT</span>{% endif %}
             </div>
             <a href="{% url 'product_detail' product.id %}" class="catalog-view-btn">View Item</a>
           </div>
@@ -140,6 +146,8 @@
     </section>
   </main>
 
+  <!-- load jQuery then our scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="{% static 'store/js/shared.js' %}"></script>
   <script src="{% static 'store/js/collection.js' %}"></script>
 </body>

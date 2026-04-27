@@ -1,25 +1,46 @@
-/* collection page only script */
+// collection page
 
+$(document).ready(function() {
 
-/* hide cards instantly as the user types in the search box */
-function filterCards() {
-  var input = document.querySelector("[data-search]");
-  if (!input) return;
+    // when user picks a category, load its subcategories
+    $('#category-select').on('change', function() {
+        var parentId = $(this).val();
 
-  var query = input.value.toLowerCase().trim();
-  var cards = document.querySelectorAll(".catalog-card");
+        if (!parentId) {
+            $('#subcategory-wrap').hide();
+            return;
+        }
 
-  cards.forEach(function (card) {
-    var text = card.textContent.toLowerCase();
-    /* show the card if its text contains the query otherwise hide it */
-    card.style.display = text.includes(query) ? "" : "none";
-  });
-}
+        $.ajax({
+            url: '/api/subcategories/',
+            type: 'GET',
+            data: { parent_id: parentId },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(data) {
+                if (data.subcategories.length > 0) {
+                    var opts = '<option value="">All sub-categories</option>';
+                    for (var i = 0; i < data.subcategories.length; i++) {
+                        opts += '<option value="' + data.subcategories[i].id + '">' + data.subcategories[i].name + '</option>';
+                    }
+                    $('#subcategory-select').html(opts);
+                    $('#subcategory-wrap').show();
+                } else {
+                    $('#subcategory-wrap').hide();
+                }
+            }
+        });
+    });
 
+    // live filter as user types in search box
+    $('[data-search]').on('input', function() {
+        var q = $(this).val().toLowerCase();
+        $('.catalog-card').each(function() {
+            if ($(this).text().toLowerCase().includes(q)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
 
-document.addEventListener("DOMContentLoaded", function () {
-  var search = document.querySelector("[data-search]");
-  if (search) {
-    search.addEventListener("input", filterCards);
-  }
 });

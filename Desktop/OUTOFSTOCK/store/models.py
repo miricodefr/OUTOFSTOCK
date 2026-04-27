@@ -16,16 +16,32 @@ class Profile(models.Model):
         return self.user.username + ' as ' + self.role
 
 
-# product category like furniture or electronics
+# product category like Electronics or Furniture
+# parent is null for top level categories like Electronics
+# parent points to another category for sub categories like Phones under Electronics
 class Category(models.Model):
     name        = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    parent      = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subcategories'
+    )
 
     class Meta:
         verbose_name_plural = 'Categories'
 
     def __str__(self):
+        # show parent name before child name so admin lists are easy to read
+        if self.parent:
+            return self.parent.name + ' > ' + self.name
         return self.name
+
+    def is_top_level(self):
+        # returns True if this category has no parent
+        return self.parent is None
 
 
 # a product that is listed for sale on the site
@@ -41,6 +57,22 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# extra images attached to a product listing
+# the first image uploaded is considered the cover image
+# is_cover is set to True on the first image and False on the rest
+class ProductImage(models.Model):
+    product  = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image    = models.ImageField(upload_to='products/')
+    is_cover = models.BooleanField(default=False)
+    order    = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return 'Image for ' + self.product.name
 
 
 # a star rating and comment left by a logged in user on a product
@@ -97,3 +129,17 @@ class UsedCode(models.Model):
 
     def __str__(self):
         return self.user.username + ' used ' + self.code
+
+
+# stores the last 10 products a logged in user has visited
+# each time they open a product page we update or create a row for that product
+class RecentlyViewed(models.Model):
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recently_viewed')
+    product    = models.ForeignKey(Product, on_delete=models.CASCADE)
+    viewed_at  = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-viewed_at']
+
+    def __str__(self):
+        return self.user.username + ' viewed ' + self.product.name

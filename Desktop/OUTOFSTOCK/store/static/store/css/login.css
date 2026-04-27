@@ -1,66 +1,60 @@
-/* center the login card vertically */
 .auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
 }
 
-/* two column layout: form card on the left, info card on the right */
 .auth-card-wrap {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 1.5rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 1.5rem;
 }
 
-/* single column for register and edit profile */
 .single-wide {
-  grid-template-columns: 1fr;
-  max-width: 520px;
+    grid-template-columns: 1fr;
+    max-width: 520px;
 }
 
 .wide-card {
-  max-width: 520px;
+    max-width: 520px;
 }
 
-/* the card box itself */
 .auth-card {
-  padding: 2rem;
-  border-radius: 22px;
+    padding: 2rem;
+    border-radius: 22px;
 }
 
 .auth-card h1 {
-  color: var(--page-text);
+    color: var(--page-text);
 }
 
-/* the secondary info card on the login page */
 .secondary-card {
-  background: var(--card-bg);
-  border-color: var(--card-border);
+    background: var(--card-bg);
+    border-color: var(--card-border);
 }
 
-/* list of reasons to create an account */
 .feature-list {
-  list-style: none;
-  display: grid;
-  gap: 1rem;
-  line-height: 1.6;
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+    line-height: 1.6;
 }
 
 .feature-list li {
-  color: var(--page-text);
+    color: var(--page-text);
 }
 
-/* orange diamond before each list item */
 .feature-list li::before {
-  content: "◆";
-  color: var(--orange);
-  margin-right: 0.7rem;
+    content: "◆";
+    color: var(--orange);
+    margin-right: 0.7rem;
 }
 
-/* phone: stack the two cards */
+.auth-switch-link:hover {
+    opacity: 0.75;
+}
+
 @media (max-width: 768px) {
-  .auth-card-wrap {
-    grid-template-columns: 1fr;
-  }
+    .auth-card-wrap { grid-template-columns: 1fr; }
 }

@@ -1,237 +1,270 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Avg, Sum
-from .models import Product, Category, CartItem, Review, WishlistItem, Profile, Order, UsedCode
+from django.http import JsonResponse
+from django.db.models import Q
+from .models import Product, Category, CartItem, Review, WishlistItem, Profile, Order, UsedCode, RecentlyViewed, ProductImage
 import random
 
-
-# discount codes and the percent they take off
-# 0.10 means 10 percent off and 0.90 means 90 percent off
 DISCOUNT_CODES = {
     'GIVEAPLS': 0.90,
-    '10OFF':    0.10,
+    '10OFF': 0.10,
 }
 
-
-# helper that returns the role of any logged in user
 def get_role(user):
     if user.is_staff:
         return 'admin'
     try:
         return user.profile.role
-    except Exception:
+    except:
         return 'buyer'
 
 
-# home page view
-# picks 4 random products to show on the TV screens
 def home(request):
-    all_ids = list(Product.objects.values_list('id', flat=True))
-    picked_ids = random.sample(all_ids, min(4, len(all_ids)))
-    tv_products = list(Product.objects.filter(id__in=picked_ids))
-
-    # pad the list with None if there are fewer than 4 products
+    all_products = list(Product.objects.all())
+    tv_products = random.sample(all_products, min(4, len(all_products)))
     while len(tv_products) < 4:
         tv_products.append(None)
-
     return render(request, 'store/home.html', {'tv_products': tv_products})
 
 
-# collection page view
-# shows all products and handles search and filter from the URL parameters
 def products(request):
-    all_products = Product.objects.all().select_related('category', 'owner')
-    categories   = Category.objects.all()
+    items = Product.objects.all()
+    top_categories = Category.objects.filter(parent=None)
+    categories = Category.objects.all()
 
-    # read whatever the user typed or selected in the filter form
-    query        = request.GET.get('q', '').strip()
-    category_id  = request.GET.get('category', '')
-    max_price    = request.GET.get('max_price', '')
-    brand_filter = request.GET.get('brand', '').strip()
-    sort_by      = request.GET.get('sort', 'newest')
+    query = request.GET.get('q', '')
+    category_id = request.GET.get('category', '')
+    subcategory_id = request.GET.get('subcategory', '')
+    max_price = request.GET.get('max_price', '')
+    brand_filter = request.GET.get('brand', '')
+    sort_by = request.GET.get('sort', 'newest')
 
-    # search by product name or brand name
     if query:
-        all_products = all_products.filter(
-            Q(name__icontains=query) | Q(brand__icontains=query)
-        )
+        items = items.filter(Q(name__icontains=query) | Q(brand__icontains=query))
 
-    # filter by category if one was selected
-    if category_id:
-        all_products = all_products.filter(category__id=category_id)
+    if subcategory_id:
+        items = items.filter(category__id=subcategory_id)
+    elif category_id:
+        # get products in this category and also products in subcategories of it
+        items = items.filter(Q(category__id=category_id) | Q(category__parent__id=category_id))
 
-    # filter by max price if one was selected
     if max_price:
         try:
-            all_products = all_products.filter(price__lte=float(max_price))
-        except ValueError:
+            items = items.filter(price__lte=float(max_price))
+        except:
             pass
 
-    # filter by brand if one was selected
     if brand_filter:
-        all_products = all_products.filter(brand__icontains=brand_filter)
+        items = items.filter(brand__icontains=brand_filter)
 
-    # sort the results based on what the user picked
-    sort_map = {
-        'newest':     '-id',
-        'oldest':     'id',
-        'price_asc':  'price',
-        'price_desc': '-price',
-        'az':         'name',
-    }
-    all_products = all_products.order_by(sort_map.get(sort_by, '-id'))
-    all_brands   = Product.objects.exclude(brand='').values_list('brand', flat=True).distinct()
+    if sort_by == 'price_asc':
+        items = items.order_by('price')
+    elif sort_by == 'price_desc':
+        items = items.order_by('-price')
+    elif sort_by == 'oldest':
+        items = items.order_by('id')
+    elif sort_by == 'az':
+        items = items.order_by('name')
+    else:
+        items = items.order_by('-id')
+
+    all_brands = Product.objects.exclude(brand='').values_list('brand', flat=True).distinct()
+
+    subcategories = []
+    if category_id:
+        subcategories = list(Category.objects.filter(parent__id=category_id).values('id', 'name'))
 
     return render(request, 'store/products.html', {
-        'products':       all_products,
-        'categories':     categories,
-        'all_brands':     all_brands,
-        'query':          query,
-        'selected_cat':   category_id,
+        'products': items,
+        'top_categories': top_categories,
+        'categories': categories,
+        'subcategories': subcategories,
+        'all_brands': all_brands,
+        'query': query,
+        'selected_cat': category_id,
+        'selected_subcat': subcategory_id,
         'selected_price': max_price,
         'selected_brand': brand_filter,
-        'sort_by':        sort_by,
-        'result_count':   all_products.count(),
+        'sort_by': sort_by,
+        'result_count': items.count(),
     })
 
 
-# single product page view
-# also handles the review form submission via POST
-def product_detail(request, product_id):
-    product     = get_object_or_404(Product, id=product_id)
-    recommended = Product.objects.filter(category=product.category).exclude(id=product.id)[:3]
-    reviews     = product.reviews.all().select_related('user')
-    avg_rating  = reviews.aggregate(avg=Avg('rating'))['avg']
+def subcategories_json(request):
+    parent_id = request.GET.get('parent_id', '')
+    subs = []
+    if parent_id:
+        subs = list(Category.objects.filter(parent__id=parent_id).values('id', 'name'))
+    return JsonResponse({'subcategories': subs})
 
-    # if a logged in user submitted the review form save it and reload the page
+
+def product_detail(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return redirect('products')
+
+    reviews = product.reviews.all()
+    recommended = Product.objects.filter(category=product.category).exclude(id=product.id)[:3]
+    product_images = product.images.all()
+
+    # calculate avg rating manually
+    avg_rating = None
+    if reviews.count() > 0:
+        total = 0
+        for r in reviews:
+            total += r.rating
+        avg_rating = round(total / reviews.count(), 1)
+
+    # save to recently viewed if logged in
+    if request.user.is_authenticated:
+        RecentlyViewed.objects.filter(user=request.user, product=product).delete()
+        RecentlyViewed.objects.create(user=request.user, product=product)
+        # only keep 10
+        old_views = RecentlyViewed.objects.filter(user=request.user).order_by('-viewed_at')
+        ids = list(old_views.values_list('id', flat=True)[:10])
+        RecentlyViewed.objects.filter(user=request.user).exclude(id__in=ids).delete()
+
+    # handle review submission
     if request.method == 'POST' and request.user.is_authenticated:
-        rating  = request.POST.get('rating', 5)
+        rating = int(request.POST.get('rating', 3))
         comment = request.POST.get('comment', '')
-        Review.objects.create(
-            product=product,
-            user=request.user,
-            rating=rating,
-            comment=comment
-        )
+
+        already = Review.objects.filter(product=product, user=request.user).exists()
+        if already:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'ok': False, 'error': 'You already reviewed this product.'})
+            return redirect('product_detail', product_id=product_id)
+
+        r = Review.objects.create(product=product, user=request.user, rating=rating, comment=comment)
+
+        # recalculate avg
+        all_r = product.reviews.all()
+        new_total = 0
+        for rev in all_r:
+            new_total += rev.rating
+        new_avg = round(new_total / all_r.count(), 1)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'ok': True,
+                'username': request.user.username,
+                'rating': r.rating,
+                'comment': r.comment,
+                'new_avg': new_avg,
+                'count': all_r.count(),
+            })
+
         return redirect('product_detail', product_id=product_id)
 
     return render(request, 'store/product_detail.html', {
-        'product':     product,
+        'product': product,
+        'product_images': product_images,
         'recommended': recommended,
-        'reviews':     reviews,
-        'avg_rating':  avg_rating,
+        'reviews': reviews,
+        'avg_rating': avg_rating,
     })
 
 
-# cart page view
-# reads the users cart items and applies any active discount code
 def cart(request):
-    cart_items   = []
-    subtotal     = 0
+    cart_items = []
+    subtotal = 0
     discount_pct = 0
     discount_amt = 0
-    total        = 0
+    total = 0
     applied_code = request.session.get('applied_code', '')
 
     if request.user.is_authenticated:
-        cart_items = CartItem.objects.filter(user=request.user).select_related('product')
-        subtotal   = sum(item.product.price * item.quantity for item in cart_items)
+        cart_items = CartItem.objects.filter(user=request.user)
+        for item in cart_items:
+            subtotal += float(item.product.price) * item.quantity
 
-        # apply discount if there is an active code in the session
-        if applied_code and applied_code in DISCOUNT_CODES:
+        if applied_code in DISCOUNT_CODES:
             discount_pct = DISCOUNT_CODES[applied_code]
             discount_amt = round(subtotal * discount_pct, 2)
 
-        total = round(float(subtotal) - float(discount_amt), 2)
+        total = round(subtotal - discount_amt, 2)
+        subtotal = round(subtotal, 2)
 
     return render(request, 'store/cart.html', {
-        'cart_items':   cart_items,
-        'subtotal':     subtotal,
+        'cart_items': cart_items,
+        'subtotal': subtotal,
         'discount_pct': int(discount_pct * 100),
         'discount_amt': discount_amt,
-        'total':        total,
+        'total': total,
         'applied_code': applied_code,
     })
 
 
-# apply discount code view
-# checks the code is valid and not already used by this user
 @login_required
 def apply_code(request):
     if request.method == 'POST':
         code = request.POST.get('code', '').strip().upper()
-
         if code not in DISCOUNT_CODES:
-            request.session['code_error']   = 'That code does not exist.'
+            request.session['code_error'] = 'That code does not exist.'
             request.session['code_success'] = ''
         elif UsedCode.objects.filter(user=request.user, code=code).exists():
-            request.session['code_error']   = 'You have already used that code.'
+            request.session['code_error'] = 'You already used this code.'
             request.session['code_success'] = ''
         else:
             request.session['applied_code'] = code
-            request.session['code_error']   = ''
-            request.session['code_success'] = code + ' applied. ' + str(int(DISCOUNT_CODES[code] * 100)) + ' percent off!'
-
+            request.session['code_error'] = ''
+            request.session['code_success'] = code + ' applied! ' + str(int(DISCOUNT_CODES[code] * 100)) + '% off!'
     return redirect('cart')
 
 
-# remove discount code view
-# clears the active code from the session
 @login_required
 def remove_code(request):
     request.session.pop('applied_code', None)
-    request.session.pop('code_error',   None)
+    request.session.pop('code_error', None)
     request.session.pop('code_success', None)
     return redirect('cart')
 
 
-# add to cart view
-# creates or increments a cart item for the logged in user
 @login_required
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    cart_item, created = CartItem.objects.get_or_create(
-        user=request.user,
-        product=product,
-        defaults={'quantity': 1}
-    )
-    # if the item was already in the cart just increase the quantity
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
+    product = Product.objects.get(id=product_id)
+    existing = CartItem.objects.filter(user=request.user, product=product).first()
+    if existing:
+        existing.quantity += 1
+        existing.save()
+    else:
+        CartItem.objects.create(user=request.user, product=product, quantity=1)
     return redirect('cart')
 
 
-# remove from cart view
-# deletes a single cart row belonging to the logged in user
 @login_required
 def remove_from_cart(request, item_id):
     CartItem.objects.filter(id=item_id, user=request.user).delete()
     return redirect('cart')
 
 
-# checkout view
-# turns each cart item into an Order row then clears the cart
 @login_required
 def checkout(request):
     applied_code = request.session.get('applied_code', '')
-    cart_items   = CartItem.objects.filter(user=request.user).select_related('product')
+    cart_items = CartItem.objects.filter(user=request.user)
 
     for item in cart_items:
-        line_total = float(item.product.price) * item.quantity
-        # apply the discount to each line if a code is active
-        if applied_code and applied_code in DISCOUNT_CODES:
-            line_total = line_total * (1 - DISCOUNT_CODES[applied_code])
+        price = float(item.product.price) * item.quantity
+        if applied_code in DISCOUNT_CODES:
+            price = price * (1 - DISCOUNT_CODES[applied_code])
+
         Order.objects.create(
             buyer=request.user,
             product=item.product,
             quantity=item.quantity,
-            total_price=round(line_total, 2),
+            total_price=round(price, 2),
         )
 
-    # mark the code as used so the same user cannot use it again
+        # reduce stock
+        p = item.product
+        p.stock = p.stock - item.quantity
+        if p.stock < 0:
+            p.stock = 0
+        p.save()
+
     if applied_code:
         UsedCode.objects.get_or_create(user=request.user, code=applied_code)
         request.session.pop('applied_code', None)
@@ -240,100 +273,108 @@ def checkout(request):
     return render(request, 'store/checkout_done.html')
 
 
-# dashboard view
-# builds a different context depending on whether the user is a buyer, seller or admin
 @login_required
 def dashboard(request):
-    role       = get_role(request.user)
-    cart_items = CartItem.objects.filter(user=request.user).select_related('product')
-    cart_count = sum(item.quantity for item in cart_items)
+    role = get_role(request.user)
+    cart_items = CartItem.objects.filter(user=request.user)
+    cart_count = 0
+    for item in cart_items:
+        cart_count += item.quantity
 
-    ctx = {
-        'role':           role,
-        'cart_items':     cart_items,
-        'cart_count':     cart_count,
-        'wishlist_items': WishlistItem.objects.filter(user=request.user).select_related('product'),
-        'review_count':   Review.objects.filter(user=request.user).count(),
-        'categories':     Category.objects.all(),
+    recent_views = RecentlyViewed.objects.filter(user=request.user).order_by('-viewed_at')[:6]
+
+    context = {
+        'role': role,
+        'cart_items': cart_items,
+        'cart_count': cart_count,
+        'wishlist_items': WishlistItem.objects.filter(user=request.user),
+        'review_count': Review.objects.filter(user=request.user).count(),
+        'categories': Category.objects.filter(parent=None),
+        'recent_views': recent_views,
     }
 
-    # extra data for sellers and admins
-    if role in ('seller', 'admin'):
+    if role == 'seller' or role == 'admin':
         if role == 'admin':
-            # admins see everything
-            my_products = Product.objects.all().select_related('category', 'owner')
-            orders      = Order.objects.select_related('product', 'buyer').order_by('-created_at')
+            my_products = Product.objects.all()
+            orders = Order.objects.all().order_by('-created_at')
         else:
-            # sellers only see their own products and orders
-            my_products = Product.objects.filter(owner=request.user).select_related('category')
-            orders      = Order.objects.filter(
-                product__owner=request.user
-            ).select_related('product', 'buyer').order_by('-created_at')
+            my_products = Product.objects.filter(owner=request.user)
+            orders = Order.objects.filter(product__owner=request.user).order_by('-created_at')
 
-        total_revenue  = orders.aggregate(t=Sum('total_price'))['t'] or 0
-        avg_rating_all = Review.objects.filter(product__in=my_products).aggregate(avg=Avg('rating'))['avg']
+        total_revenue = 0
+        for o in orders:
+            total_revenue += float(o.total_price)
 
-        ctx.update({
-            'my_products':    my_products,
-            'orders':         orders[:10],
-            'total_revenue':  total_revenue,
-            'total_orders':   orders.count(),
-            'avg_rating_all': avg_rating_all,
-            'product_count':  my_products.count(),
-        })
+        avg_rating_all = None
+        all_ratings = Review.objects.filter(product__in=my_products)
+        if all_ratings.count() > 0:
+            rtotal = 0
+            for r in all_ratings:
+                rtotal += r.rating
+            avg_rating_all = round(rtotal / all_ratings.count(), 1)
 
-    # extra data only for admins
+        context['my_products'] = my_products
+        context['orders'] = orders[:10]
+        context['total_revenue'] = round(total_revenue, 2)
+        context['total_orders'] = orders.count()
+        context['avg_rating_all'] = avg_rating_all
+        context['product_count'] = my_products.count()
+
     if role == 'admin':
-        ctx.update({
-            'total_users':    User.objects.count(),
-            'total_products': Product.objects.count(),
-            'all_users':      User.objects.select_related('profile').all(),
-        })
+        context['total_users'] = User.objects.count()
+        context['total_products'] = Product.objects.count()
+        context['all_users'] = User.objects.all()
+        context['all_categories'] = Category.objects.all()
 
-    return render(request, 'store/dashboard.html', ctx)
+    return render(request, 'store/dashboard.html', context)
 
 
-# create listing view
-# only sellers and admins can access this
 @login_required
 def create_listing(request):
     role = get_role(request.user)
-    if role not in ('seller', 'admin'):
+    if role != 'seller' and role != 'admin':
         return redirect('dashboard')
 
     if request.method == 'POST':
-        name        = request.POST.get('name', '').strip()
-        description = request.POST.get('description', '').strip()
-        price       = request.POST.get('price', '0')
-        stock       = request.POST.get('stock', '0')
-        brand       = request.POST.get('brand', '').strip()
+        name = request.POST.get('name', '')
+        description = request.POST.get('description', '')
+        price = request.POST.get('price', '0')
+        stock = request.POST.get('stock', '0')
+        brand = request.POST.get('brand', '')
         category_id = request.POST.get('category', '')
-        image       = request.FILES.get('image')
 
         if name and description and category_id:
-            category = get_object_or_404(Category, id=category_id)
-            product  = Product.objects.create(
+            category = Category.objects.get(id=category_id)
+            product = Product.objects.create(
                 owner=request.user,
                 category=category,
                 name=name,
                 description=description,
                 brand=brand,
-                price=float(price) if price else 0,
-                stock=int(stock)   if stock else 0,
+                price=float(price),
+                stock=int(stock),
             )
-            if image:
-                product.image = image
-                product.save()
+
+            uploaded_images = request.FILES.getlist('images')
+            for i, img_file in enumerate(uploaded_images):
+                is_cover = (i == 0)
+                prod_img = ProductImage.objects.create(
+                    product=product,
+                    image=img_file,
+                    is_cover=is_cover,
+                    order=i,
+                )
+                if is_cover:
+                    product.image = prod_img.image
+                    product.save()
 
     return redirect('dashboard')
 
 
-# edit listing view
-# sellers can only edit their own products but admins can edit any product
 @login_required
 def edit_listing(request, product_id):
-    role    = get_role(request.user)
-    product = get_object_or_404(Product, id=product_id)
+    role = get_role(request.user)
+    product = Product.objects.get(id=product_id)
 
     if role == 'buyer':
         return redirect('dashboard')
@@ -341,27 +382,38 @@ def edit_listing(request, product_id):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        product.name        = request.POST.get('name', product.name).strip()
-        product.description = request.POST.get('description', product.description).strip()
-        product.brand       = request.POST.get('brand', product.brand).strip()
-        product.price       = request.POST.get('price', product.price)
-        product.stock       = request.POST.get('stock', product.stock)
+        product.name = request.POST.get('name', product.name)
+        product.description = request.POST.get('description', product.description)
+        product.brand = request.POST.get('brand', product.brand)
+        product.price = request.POST.get('price', product.price)
+        product.stock = request.POST.get('stock', product.stock)
+
         cat_id = request.POST.get('category', '')
         if cat_id:
-            product.category = get_object_or_404(Category, id=cat_id)
-        if request.FILES.get('image'):
-            product.image = request.FILES['image']
+            product.category = Category.objects.get(id=cat_id)
+
+        new_images = request.FILES.getlist('images')
+        for i, img_file in enumerate(new_images):
+            existing_count = product.images.count()
+            is_cover = (existing_count == 0 and i == 0)
+            prod_img = ProductImage.objects.create(
+                product=product,
+                image=img_file,
+                is_cover=is_cover,
+                order=existing_count + i,
+            )
+            if is_cover:
+                product.image = prod_img.image
+
         product.save()
 
     return redirect('dashboard')
 
 
-# delete listing view
-# sellers can only delete their own products but admins can delete any product
 @login_required
 def delete_listing(request, product_id):
-    role    = get_role(request.user)
-    product = get_object_or_404(Product, id=product_id)
+    role = get_role(request.user)
+    product = Product.objects.get(id=product_id)
 
     if role == 'buyer':
         return redirect('dashboard')
@@ -372,24 +424,42 @@ def delete_listing(request, product_id):
     return redirect('dashboard')
 
 
-# create category view
-# only admins can create categories
 @login_required
 def create_category(request):
     if not request.user.is_staff:
         return redirect('dashboard')
-
     if request.method == 'POST':
-        name        = request.POST.get('name', '').strip()
-        description = request.POST.get('description', '').strip()
+        name = request.POST.get('name', '')
+        description = request.POST.get('description', '')
+        parent_id = request.POST.get('parent', '')
         if name:
-            Category.objects.create(name=name, description=description)
-
+            parent = None
+            if parent_id:
+                parent = Category.objects.filter(id=parent_id).first()
+            Category.objects.create(name=name, description=description, parent=parent)
     return redirect('dashboard')
 
 
-# delete category view
-# only admins can delete categories
+@login_required
+def edit_category(request, category_id):
+    if not request.user.is_staff:
+        return redirect('dashboard')
+    category = Category.objects.get(id=category_id)
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        description = request.POST.get('description', '')
+        parent_id = request.POST.get('parent', '')
+        if name:
+            category.name = name
+            category.description = description
+            if parent_id and int(parent_id) != category.id:
+                category.parent = Category.objects.filter(id=parent_id).first()
+            elif not parent_id:
+                category.parent = None
+            category.save()
+    return redirect('dashboard')
+
+
 @login_required
 def delete_category(request, category_id):
     if not request.user.is_staff:
@@ -398,8 +468,6 @@ def delete_category(request, category_id):
     return redirect('dashboard')
 
 
-# delete user view
-# only admins can delete users and they cannot delete themselves
 @login_required
 def delete_user(request, user_id):
     if not request.user.is_staff:
@@ -409,93 +477,102 @@ def delete_user(request, user_id):
     return redirect('dashboard')
 
 
-# edit profile view
-# lets any logged in user update their email or password
 @login_required
 def edit_profile(request):
-    error   = None
+    error = None
     success = None
-
     if request.method == 'POST':
-        email    = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '').strip()
-
+        email = request.POST.get('email', '')
+        password = request.POST.get('password', '')
         if email:
             request.user.email = email
             request.user.save()
-
         if password:
             if len(password) < 6:
                 error = 'Password must be at least 6 characters.'
             else:
                 request.user.set_password(password)
                 request.user.save()
-                # log the user back in after a password change
                 login(request, request.user)
-
         if not error:
-            success = 'Profile updated successfully.'
-
+            success = 'Profile updated!'
     return render(request, 'store/edit_profile.html', {'error': error, 'success': success})
 
 
-# add to wishlist view
 @login_required
 def add_to_wishlist(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    WishlistItem.objects.get_or_create(user=request.user, product=product)
+    product = Product.objects.get(id=product_id)
+    if not WishlistItem.objects.filter(user=request.user, product=product).exists():
+        WishlistItem.objects.create(user=request.user, product=product)
     return redirect('product_detail', product_id=product_id)
 
 
-# remove from wishlist view
 @login_required
 def remove_from_wishlist(request, product_id):
     WishlistItem.objects.filter(user=request.user, product__id=product_id).delete()
     return redirect('dashboard')
 
 
-# login view
-# authenticates the user and redirects them to the dashboard
+@login_required
+def delete_product_image(request, image_id):
+    role = get_role(request.user)
+    prod_image = ProductImage.objects.get(id=image_id)
+    product = prod_image.product
+
+    if role == 'buyer':
+        return redirect('dashboard')
+    if role == 'seller' and product.owner != request.user:
+        return redirect('dashboard')
+
+    was_cover = prod_image.is_cover
+    prod_image.delete()
+
+    if was_cover:
+        next_img = product.images.first()
+        if next_img:
+            next_img.is_cover = True
+            next_img.save()
+            product.image = next_img.image
+        else:
+            product.image = None
+        product.save()
+
+    return redirect('dashboard')
+
+
 def login_view(request):
     error = None
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user     = authenticate(request, username=username, password=password)
-
+        user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
             return redirect('dashboard')
         else:
-            error = 'Wrong username or password. Please try again.'
-
+            error = 'Wrong username or password.'
     return render(request, 'store/login.html', {'error': error})
 
 
-# logout view
 def logout_view(request):
     logout(request)
     return redirect('home')
 
 
-# register view
-# creates a new User and Profile then logs the user in right away
 def register(request):
     error = None
-
     if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '').strip()
-        email    = request.POST.get('email', '').strip()
-        role     = request.POST.get('role', 'buyer')
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        email = request.POST.get('email', '')
+        role = request.POST.get('role', 'buyer')
 
         if not username or not password or not email:
             error = 'All fields are required.'
         elif len(password) < 6:
             error = 'Password must be at least 6 characters.'
         elif User.objects.filter(username=username).exists():
-            error = 'That username is already taken.'
+            error = 'Username already taken.'
         else:
             user = User.objects.create_user(username=username, password=password, email=email)
             Profile.objects.create(user=user, role=role)

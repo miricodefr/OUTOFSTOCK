@@ -6,6 +6,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
+        # depends on the second migration that already exists in your project
         ('store', '0002_alter_category_options_product_owner_wishlistitem_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

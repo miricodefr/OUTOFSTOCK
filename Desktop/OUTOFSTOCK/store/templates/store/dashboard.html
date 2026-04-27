@@ -105,6 +105,39 @@
       {% endif %}
     </section>
 
+    <!-- recently viewed products — scrollable card carousel -->
+    {% if recent_views %}
+    <section style="margin-top:2rem;">
+      <p class="section-label">RECENTLY VIEWED</p>
+      <div class="recent-scroller-wrap" id="recentWrap">
+        <!-- prev arrow -->
+        <button class="recent-arrow prev hidden" id="recentPrev" aria-label="Previous">&#8592;</button>
+        <!-- scrollable window -->
+        <div class="recent-scroller">
+          <div class="recent-track" id="recentTrack">
+            {% for rv in recent_views %}
+            <a href="{% url 'product_detail' rv.product.id %}" class="recent-card">
+              <div class="recent-thumb">
+                {% if rv.product.image %}
+                  <img src="{{ rv.product.image.url }}" alt="{{ rv.product.name }}" />
+                {% else %}
+                  <span>{{ rv.product.name }}</span>
+                {% endif %}
+              </div>
+              <div class="recent-copy">
+                <p class="recent-name">{{ rv.product.name }}</p>
+                <p class="recent-price">&#8364;{{ rv.product.price }}</p>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- next arrow -->
+        <button class="recent-arrow next" id="recentNext" aria-label="Next">&#8594;</button>
+      </div>
+    </section>
+    {% endif %}
+
     {% if role == 'seller' or role == 'admin' %}
     <section style="margin-top:2.5rem;">
       <p class="section-label">{% if role == 'admin' %}ALL LISTINGS{% else %}MY LISTINGS{% endif %}</p>
@@ -149,7 +182,9 @@
                         {% endfor %}
                       </select>
                     </label>
-                    <label>Image<input name="image" type="file" accept="image/*" /></label>
+                    <label>Add more images
+                      <input name="images" type="file" accept="image/*" multiple class="edit-image-input" />
+                    </label>
                   </div>
                   <label>Description
                     <textarea name="description" rows="2" style="width:100%;font-family:inherit;margin-top:0.25rem;">{{ product.description }}</textarea>
@@ -199,30 +234,81 @@
     {% if role == 'admin' %}
     <section style="margin-top:2.5rem;">
       <p class="section-label">MANAGE CATEGORIES</p>
-      <form method="POST" action="{% url 'create_category' %}" style="display:flex;gap:0.75rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap;">
+
+      <!-- form to create a new category or sub-category -->
+      <form method="POST" action="{% url 'create_category' %}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
         {% csrf_token %}
-        <label style="font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;display:flex;flex-direction:column;gap:0.4rem;">
-          Name
-          <input name="name" type="text" placeholder="New category name" style="border:1px solid rgba(23,23,23,0.16);background:rgba(255,255,255,0.7);padding:0.75rem 1rem;border-radius:10px;" />
+        <label class="cat-label">Name
+          <input name="name" type="text" placeholder="New category name" class="cat-input" />
         </label>
-        <label style="font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;display:flex;flex-direction:column;gap:0.4rem;">
-          Description
-          <input name="description" type="text" placeholder="Optional description" style="border:1px solid rgba(23,23,23,0.16);background:rgba(255,255,255,0.7);padding:0.75rem 1rem;border-radius:10px;" />
+        <label class="cat-label">Description
+          <input name="description" type="text" placeholder="Optional" class="cat-input" />
+        </label>
+        <label class="cat-label">Parent (optional)
+          <select name="parent" class="cat-input">
+            <option value="">None (top level)</option>
+            {% for cat in all_categories %}
+              {% if cat.parent == None %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
         </label>
         <button type="submit" class="ghost-btn" style="margin-top:0;">Add Category</button>
       </form>
 
       <table class="analytics-table">
         <thead>
-          <tr><th>Name</th><th>Description</th><th>Action</th></tr>
+          <tr><th>Name</th><th>Parent</th><th>Description</th><th>Actions</th></tr>
         </thead>
         <tbody>
-          {% for cat in categories %}
+          {% for cat in all_categories %}
           <tr>
             <td>{{ cat.name }}</td>
+            <td>{{ cat.parent.name|default:"Top level" }}</td>
             <td>{{ cat.description|default:"none" }}</td>
             <td>
-              <a href="{% url 'delete_category' cat.id %}" class="ghost-btn" onclick="return confirm('Delete category {{ cat.name }}?')">Delete</a>
+              <div class="row-actions">
+                <button class="ghost-btn" data-edit-cat="{{ cat.id }}">Edit</button>
+                <a href="{% url 'delete_category' cat.id %}" class="ghost-btn" onclick="return confirm('Delete {{ cat.name }}?')">Delete</a>
+              </div>
+              <!-- inline edit form for this category -->
+              <div class="edit-form" data-edit-cat-form="{{ cat.id }}">
+                <form method="POST" action="{% url 'edit_category' cat.id %}">
+                  {% csrf_token %}
+                  <div class="edit-form-grid">
+                    <label>Name<input name="name" type="text" value="{{ cat.name }}" /></label>
+                    <label>Description<input name="description" type="text" value="{{ cat.description }}" /></label>
+                    <label>Parent
+                      <select name="parent">
+                        <option value="">None (top level)</option>
+                        {% for other in all_categories %}
+                          {% if other.id != cat.id and other.parent == None %}
+                            <option value="{{ other.id }}" {% if cat.parent.id == other.id %}selected{% endif %}>{{ other.name }}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                    </label>
+                  </div>
+                  <button type="submit" class="action-btn" style="margin-top:0.5rem;">Save</button>
+                </form>
+                <!-- existing images for this listing with delete buttons -->
+                {% if product.images.all %}
+                <div style="margin-top:0.75rem;">
+                  <p style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--page-text);opacity:0.6;margin-bottom:0.4rem;">Current images</p>
+                  <div class="preview-strip">
+                    {% for pimg in product.images.all %}
+                    <div class="preview-thumb {% if pimg.is_cover %}is-cover{% endif %}">
+                      <img src="{{ pimg.image.url }}" alt="Image {{ forloop.counter }}" />
+                      <a href="{% url 'delete_product_image' pimg.id %}"
+                         style="position:absolute;top:2px;right:3px;background:rgba(0,0,0,0.55);color:#fff;font-size:0.7rem;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;text-decoration:none;line-height:1;"
+                         title="Delete image">&times;</a>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              </div>
             </td>
           </tr>
           {% endfor %}
@@ -340,9 +426,12 @@
           <textarea name="description" rows="3" placeholder="Describe the item..." style="width:100%;font-family:inherit;margin-top:0.25rem;" required></textarea>
         </label>
 
-        <label>Product image
-          <input name="image" type="file" accept="image/*" />
+        <label>Product images (you can pick more than one)
+          <input name="images" type="file" accept="image/*" multiple id="modal-image-input" />
         </label>
+
+        <!-- preview strip shown by JS after the user picks files -->
+        <div id="modal-preview-strip" class="preview-strip"></div>
 
         <button type="submit" class="action-btn">Publish Listing</button>
       </form>
@@ -350,6 +439,7 @@
   </div>
   {% endif %}
 
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="{% static 'store/js/shared.js' %}"></script>
   <script src="{% static 'store/js/dashboard.js' %}"></script>
 </body>
