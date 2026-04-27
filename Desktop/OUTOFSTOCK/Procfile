@@ -1,1 +1,1 @@
-web: gunicorn outofstock_project.wsgi --log-file -
+web: python manage.py collectstatic --noinput && python manage.py migrate && gunicorn outofstock_project.wsgi --log-file -
